@@ -20,6 +20,9 @@ public class Event {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
+
+    @Enumerated(EnumType.STRING)
+    private EventCategory category;
     private String title;
     private String description;
     private String location;
