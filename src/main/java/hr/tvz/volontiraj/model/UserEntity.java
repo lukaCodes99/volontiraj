@@ -19,6 +19,7 @@ public class UserEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
+    //@Column(name = "profilePicturePath")
     private String profilePicturePath; //tu cemo dodati neke urlove u bazu koji su besplatno dostupni online kako bi imali konzistentan prikaz
     private String username;
     private String name;
@@ -33,4 +34,8 @@ public class UserEntity {
             joinColumns = @JoinColumn(name = "userEntityId"),
             inverseJoinColumns = @JoinColumn(name = "eventId"))
     Set<Event> attendingEvents;
+
+    public UserEntity(Long id) {
+        this.id = id;
+    }
 }

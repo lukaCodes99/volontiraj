@@ -11,5 +11,8 @@ public interface EventService {
     public List<EventDto> findAllPagedAndFiltered(Pageable pageable, EventFilterParams eventFilterParams);
     public Event findById(Long id);
     public Event save(EventDto eventDto);
+    public Event update(Long id, EventDto eventDto);
     public void deleteById(Long id);
+    public void upvoteEvent(Long eventId);
+    public void addVolunteer(Long eventId);
 }

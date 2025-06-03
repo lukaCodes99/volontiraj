@@ -4,6 +4,8 @@ import hr.tvz.volontiraj.dto.EventDto;
 import hr.tvz.volontiraj.filterParams.EventFilterParams;
 import hr.tvz.volontiraj.mapper.EventMapper;
 import hr.tvz.volontiraj.model.Event;
+import hr.tvz.volontiraj.model.EventCategory;
+import hr.tvz.volontiraj.model.UserEntity;
 import hr.tvz.volontiraj.repository.EventRepository;
 import hr.tvz.volontiraj.service.EventService;
 import jakarta.persistence.EntityNotFoundException;
@@ -22,7 +24,21 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventDto> findAllPagedAndFiltered(Pageable pageable, EventFilterParams eventFilterParams) {
-        return eventRepository.findAll().stream().map(EventMapper::mapEventToEventDto).toList();
+        List<Event> events = eventRepository
+                .findFilteredAndPaged(
+                    eventFilterParams.getCategory(),
+                    eventFilterParams.getTitle(),
+                    eventFilterParams.getDescription(),
+                    eventFilterParams.getLocation(),
+                    eventFilterParams.getStartDateTimeFrom(),
+                    eventFilterParams.getStartDateTimeTo(),
+                    eventFilterParams.getCreatorId(),
+                    pageable
+                );
+
+        return events.stream()
+                    .map(EventMapper::mapEventToEventDto)
+                    .toList();
     }
 
     @Override
@@ -37,11 +53,52 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public Event update(Long id, EventDto eventDto) {
+        Optional<Event> existingEvent = eventRepository.findById(id);
+        if(existingEvent.isPresent()) {
+            Event eventToUpdate = existingEvent.get();
+            eventToUpdate.setCategory(EventCategory.valueOf(eventDto.getCategory()));
+            eventToUpdate.setTitle(eventDto.getTitle());
+            eventToUpdate.setDescription(eventDto.getDescription());
+            eventToUpdate.setLocation(eventDto.getLocation());
+            eventToUpdate.setStartDateTime(eventDto.getStartDateTime());
+            return eventRepository.save(eventToUpdate);
+        } else {
+            throw new EntityNotFoundException("Event with id: " + id + " not found!");
+        }
+    }
+
+    @Override
     public void deleteById(Long id) {
         Optional<Event> eventToDelete = eventRepository.findById(id);
         if(eventToDelete.isPresent()) {
             eventRepository.deleteById(id);
         }
         else throw new EntityNotFoundException("Event with id: " + id + " not found!");
+    }
+
+    @Override
+    public void upvoteEvent(Long eventId) {
+        Optional<Event> event = eventRepository.findById(eventId);
+        if (event.isPresent()) {
+            Event existingEvent = event.get();
+            existingEvent.setUpvote(existingEvent.getUpvote() + 1);
+            eventRepository.save(existingEvent);
+        } else {
+            throw new EntityNotFoundException("Event with id: " + eventId + " not found!");
+        }
+    }
+
+    @Override
+    public void addVolunteer(Long eventId) {
+        Optional<Event> event = eventRepository.findById(eventId);
+        if (event.isPresent()) {
+            UserEntity mockUser = new UserEntity(1L); //Ovo cemo zamijeniti sa CURRENT USER--metoda ce biti implementirana kasnije kod security!
+            Event existingEvent = event.get();
+            existingEvent.getVolunteers().add(mockUser);
+            eventRepository.save(existingEvent);
+        } else {
+            throw new EntityNotFoundException("Event with id: " + eventId + " not found!");
+        }
     }
 }

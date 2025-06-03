@@ -36,10 +36,12 @@ public class EventController {
         Sort sort = Sort.by(ascending ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        List<EventDto> events = eventService.findAllPagedAndFiltered(pageable, filterParams);
-        return events.isEmpty()
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.ok(events);
+        try {
+            List<EventDto> events = eventService.findAllPagedAndFiltered(pageable, filterParams);
+            return ResponseEntity.ok(events);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     @GetMapping("/{id}")
@@ -62,7 +64,7 @@ public class EventController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
         try {
-            eventService.findById(id);
+
             eventService.deleteById(id);
             return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException e) {
