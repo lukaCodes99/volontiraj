@@ -10,8 +10,12 @@ public interface EventImageService {
 
     EventImage save(EventImage eventImage);
 
-    EventImage findByEventId(Long eventId);
+    EventImage findById(Long id);
 
     List<EventImage> findAllByEventId(Long eventId);
+
+    void deleteAllByEventId(Long eventId);
+
+    void deleteById(Long id);
 
 }
