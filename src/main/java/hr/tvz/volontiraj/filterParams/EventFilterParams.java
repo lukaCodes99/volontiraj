@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,7 +14,7 @@ public class EventFilterParams {
     private String title;
     private String description;
     private String location;
-    private String startDateTimeFrom;
-    private String startDateTimeTo;
+    private LocalDateTime startDateTimeFrom;
+    private LocalDateTime startDateTimeTo;
     private Long creatorId;
 }

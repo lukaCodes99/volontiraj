@@ -24,9 +24,10 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventDto> findAllPagedAndFiltered(Pageable pageable, EventFilterParams eventFilterParams) {
+        EventCategory eventCategory = eventFilterParams.getCategory() == null ? null : EventCategory.valueOf(eventFilterParams.getCategory());
         List<Event> events = eventRepository
                 .findFilteredAndPaged(
-                    eventFilterParams.getCategory(),
+                    eventCategory,
                     eventFilterParams.getTitle(),
                     eventFilterParams.getDescription(),
                     eventFilterParams.getLocation(),

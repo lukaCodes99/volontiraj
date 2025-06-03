@@ -40,6 +40,7 @@ public class EventController {
             List<EventDto> events = eventService.findAllPagedAndFiltered(pageable, filterParams);
             return ResponseEntity.ok(events);
         } catch (Exception e) {
+            System.out.println("Error fetching events: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
