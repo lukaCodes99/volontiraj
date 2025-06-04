@@ -1,11 +1,13 @@
 package hr.tvz.volontiraj.service.implementation;
 
 import hr.tvz.volontiraj.dto.EventDto;
+import hr.tvz.volontiraj.dto.HomePageDto;
 import hr.tvz.volontiraj.filterParams.EventFilterParams;
 import hr.tvz.volontiraj.mapper.EventMapper;
 import hr.tvz.volontiraj.model.Event;
 import hr.tvz.volontiraj.model.EventCategory;
 import hr.tvz.volontiraj.model.UserEntity;
+import hr.tvz.volontiraj.repository.EventImageRepository;
 import hr.tvz.volontiraj.repository.EventRepository;
 import hr.tvz.volontiraj.service.EventService;
 import jakarta.persistence.EntityNotFoundException;
@@ -13,14 +15,14 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
 public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
+    private final EventImageRepository eventImageRepository;
 
     @Override
     public List<EventDto> findAllPagedAndFiltered(Pageable pageable, EventFilterParams eventFilterParams) {
@@ -101,5 +103,31 @@ public class EventServiceImpl implements EventService {
         } else {
             throw new EntityNotFoundException("Event with id: " + eventId + " not found!");
         }
+    }
+
+    //možemo i neki drugi approach, ali svakako se vidi namjera što želimo postići
+    @Override
+    public Map<String, List<HomePageDto>> getEventsForHomePage() {
+        List<Event> events = eventRepository.findLatestForHomePage();
+        Map<String, List<HomePageDto>> map = new HashMap<>();
+        map.put("pets", new ArrayList<>());
+        map.put("people", new ArrayList<>());
+
+        events.forEach(event -> {
+                    if (event.getCategory() == EventCategory.PETS) {
+                        HomePageDto homePageDto = EventMapper.mapEventToHomePageDto(event);
+                        eventImageRepository.findImagePathByEventId(event.getId())
+                                .ifPresent(homePageDto::setImagePath);
+
+                        map.get("pets").add(homePageDto);
+                    } else if (event.getCategory() == EventCategory.PEOPLE) {
+                        HomePageDto homePageDto = EventMapper.mapEventToHomePageDto(event);
+                        eventImageRepository.findImagePathByEventId(event.getId())
+                                .ifPresent(homePageDto::setImagePath);
+
+                        map.get("people").add(homePageDto);
+                    }
+                });
+        return map;
     }
 }

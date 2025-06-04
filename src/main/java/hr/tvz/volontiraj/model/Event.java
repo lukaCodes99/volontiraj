@@ -26,6 +26,7 @@ public class Event {
     private String title;
     private String description;
     private String location;
+    private String address;
     private LocalDateTime startDateTime;
     private Integer upvote;
 

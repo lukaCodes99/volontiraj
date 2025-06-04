@@ -1,6 +1,7 @@
 package hr.tvz.volontiraj.controller;
 
 import hr.tvz.volontiraj.dto.EventDto;
+import hr.tvz.volontiraj.dto.HomePageDto;
 import hr.tvz.volontiraj.filterParams.EventFilterParams;
 import hr.tvz.volontiraj.mapper.EventMapper;
 import hr.tvz.volontiraj.model.Event;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -52,6 +54,17 @@ public class EventController {
             return ResponseEntity.ok(event);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/home")
+    public ResponseEntity<Map<String, List<HomePageDto>>> getEventsForHomePage() {
+        try {
+            Map<String, List<HomePageDto>> events = eventService.getEventsForHomePage();
+            return ResponseEntity.ok(events);
+        } catch (Exception e) {
+            System.out.println("Error fetching home page events: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 

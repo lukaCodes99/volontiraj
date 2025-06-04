@@ -1,6 +1,7 @@
 package hr.tvz.volontiraj.mapper;
 
 import hr.tvz.volontiraj.dto.EventDto;
+import hr.tvz.volontiraj.dto.HomePageDto;
 import hr.tvz.volontiraj.model.Event;
 import hr.tvz.volontiraj.model.EventCategory;
 import hr.tvz.volontiraj.model.UserEntity;
@@ -48,6 +49,17 @@ public class EventMapper {
         event.setVolunteers(new HashSet<>());
 
         return event;
+    }
+
+
+    public static HomePageDto mapEventToHomePageDto(Event event) {
+        HomePageDto homePageDto = new HomePageDto();
+        homePageDto.setId(event.getId());
+        homePageDto.setTitle(event.getTitle());
+        homePageDto.setLocation(event.getLocation());
+        homePageDto.setStartDateTime(event.getStartDateTime());
+
+        return homePageDto;
     }
 
 }

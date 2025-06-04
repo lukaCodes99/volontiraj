@@ -33,4 +33,11 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             @Param("startDateTimeTo") LocalDateTime startDateTimeTo,
             @Param("creatorId") Long creatorId,
             Pageable pageable);
+
+    @Query("SELECT e FROM Event e WHERE e.category = 'PETS' "+
+            "ORDER BY e.id DESC LIMIT 4 "+
+            "UNION ALL "+
+            "SELECT e FROM Event e WHERE e.category = 'PEOPLE' "+
+            "ORDER BY e.id DESC LIMIT 4 ")
+    List<Event> findLatestForHomePage();
 }
