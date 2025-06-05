@@ -3,11 +3,14 @@ package hr.tvz.volontiraj.mapper;
 import hr.tvz.volontiraj.dto.EventDto;
 import hr.tvz.volontiraj.dto.HomePageDto;
 import hr.tvz.volontiraj.dto.NewEventDto;
+import hr.tvz.volontiraj.dto.SearchEventDto;
 import hr.tvz.volontiraj.model.Event;
 import hr.tvz.volontiraj.model.EventCategory;
+import hr.tvz.volontiraj.model.EventImage;
 import hr.tvz.volontiraj.model.UserEntity;
 
 import java.util.HashSet;
+import java.util.List;
 
 public class EventMapper {
 
@@ -25,7 +28,9 @@ public class EventMapper {
         if (event.getCreator() != null) {
             eventDto.setCreatorId(event.getCreator().getId());
         }
-        eventDto.setVolunteerCount(event.getVolunteers().size());
+        if(event.getVolunteers() != null) {
+            eventDto.setVolunteerCount(event.getVolunteers().size());
+        }
 
         return eventDto;
     }
@@ -80,8 +85,20 @@ public class EventMapper {
             creator.setId(newEventDto.getCreatorId());
             event.setCreator(creator);
         }
-
         return event;
     }
 
+    public static SearchEventDto mapEventToSearchEventDto(Event event) {
+        SearchEventDto searchEventDto = new SearchEventDto();
+        searchEventDto.setId(event.getId());
+        searchEventDto.setCategory(event.getCategory());
+        searchEventDto.setTitle(event.getTitle());
+        searchEventDto.setLocation(event.getLocation());
+        searchEventDto.setStartDateTime(event.getStartDateTime());
+
+        searchEventDto.setCreatorId(event.getCreator().getId());
+        searchEventDto.setCreatorProfileImageURL(event.getCreator().getProfilePicturePath());
+
+        return searchEventDto;
+    }
 }
