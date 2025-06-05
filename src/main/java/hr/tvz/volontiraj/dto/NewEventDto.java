@@ -5,11 +5,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class EventDto {
+public class NewEventDto {
     private Long id;
     private String category;
     private String title;
@@ -17,7 +18,6 @@ public class EventDto {
     private String location;
     private String address;
     private LocalDateTime startDateTime;
-    private Integer upvote;
     private Long creatorId;
-    private Integer volunteerCount;
+    private List<String> imagesURL;
 }

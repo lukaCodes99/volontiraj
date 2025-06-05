@@ -2,6 +2,7 @@ package hr.tvz.volontiraj.mapper;
 
 import hr.tvz.volontiraj.dto.EventDto;
 import hr.tvz.volontiraj.dto.HomePageDto;
+import hr.tvz.volontiraj.dto.NewEventDto;
 import hr.tvz.volontiraj.model.Event;
 import hr.tvz.volontiraj.model.EventCategory;
 import hr.tvz.volontiraj.model.UserEntity;
@@ -17,6 +18,7 @@ public class EventMapper {
         eventDto.setTitle(event.getTitle());
         eventDto.setDescription(event.getDescription());
         eventDto.setLocation(event.getLocation());
+        eventDto.setAddress(event.getAddress());
         eventDto.setStartDateTime(event.getStartDateTime());
         eventDto.setUpvote(event.getUpvote());
 
@@ -35,6 +37,7 @@ public class EventMapper {
         event.setTitle(eventDto.getTitle());
         event.setDescription(eventDto.getDescription());
         event.setLocation(eventDto.getLocation());
+        event.setAddress(eventDto.getAddress());
         event.setStartDateTime(eventDto.getStartDateTime());
         event.setUpvote(eventDto.getUpvote());
 
@@ -60,6 +63,25 @@ public class EventMapper {
         homePageDto.setStartDateTime(event.getStartDateTime());
 
         return homePageDto;
+    }
+
+    public static Event mapNewEventDtoToEvent(NewEventDto newEventDto) {
+        Event event = new Event();
+        event.setId(newEventDto.getId());
+        event.setCategory(EventCategory.valueOf(newEventDto.getCategory()));
+        event.setTitle(newEventDto.getTitle());
+        event.setDescription(newEventDto.getDescription());
+        event.setLocation(newEventDto.getLocation());
+        event.setAddress(newEventDto.getAddress());
+        event.setStartDateTime(newEventDto.getStartDateTime());
+
+        if (newEventDto.getCreatorId() != null) {
+            UserEntity creator = new UserEntity();
+            creator.setId(newEventDto.getCreatorId());
+            event.setCreator(creator);
+        }
+
+        return event;
     }
 
 }

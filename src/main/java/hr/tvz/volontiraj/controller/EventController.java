@@ -2,6 +2,7 @@ package hr.tvz.volontiraj.controller;
 
 import hr.tvz.volontiraj.dto.EventDto;
 import hr.tvz.volontiraj.dto.HomePageDto;
+import hr.tvz.volontiraj.dto.NewEventDto;
 import hr.tvz.volontiraj.filterParams.EventFilterParams;
 import hr.tvz.volontiraj.mapper.EventMapper;
 import hr.tvz.volontiraj.model.Event;
@@ -69,7 +70,7 @@ public class EventController {
     }
 
     @PostMapping
-    public ResponseEntity<Event> createEvent(@RequestBody EventDto eventDto) {
+    public ResponseEntity<Event> createEvent(@RequestBody NewEventDto eventDto) {
         Event createdEvent = eventService.save(eventDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdEvent);
     }

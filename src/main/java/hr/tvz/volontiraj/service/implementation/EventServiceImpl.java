@@ -2,6 +2,7 @@ package hr.tvz.volontiraj.service.implementation;
 
 import hr.tvz.volontiraj.dto.EventDto;
 import hr.tvz.volontiraj.dto.HomePageDto;
+import hr.tvz.volontiraj.dto.NewEventDto;
 import hr.tvz.volontiraj.filterParams.EventFilterParams;
 import hr.tvz.volontiraj.mapper.EventMapper;
 import hr.tvz.volontiraj.model.Event;
@@ -50,8 +51,8 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Event save(EventDto eventDto) {
-        Event newEvent = EventMapper.mapEventDtoToEvent(eventDto);
+    public Event save(NewEventDto newEventDto) {
+        Event newEvent = EventMapper.mapNewEventDtoToEvent(newEventDto);
         return eventRepository.save(newEvent);
     }
 
