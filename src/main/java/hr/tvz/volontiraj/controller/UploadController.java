@@ -17,7 +17,7 @@ public class UploadController {
     private SupabaseService supabaseService;
 
     @PutMapping("/upload")
-    public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile images) {
+    public ResponseEntity<?> uploadImage(@RequestParam("files") List<MultipartFile> images) {
         try {
             List<String> uploadedPaths = supabaseService.uploadImages(images);
             return ResponseEntity.ok().body(uploadedPaths);
