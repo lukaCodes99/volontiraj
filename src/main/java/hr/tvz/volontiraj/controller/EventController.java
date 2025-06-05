@@ -9,6 +9,7 @@ import hr.tvz.volontiraj.model.Event;
 import hr.tvz.volontiraj.service.EventService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -81,10 +82,19 @@ public class EventController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
         try {
-
             eventService.deleteById(id);
             return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<EventDto> updateEvent(@PathVariable Long id, @ModelAttribute NewEventDto updateEventDto) {
+        try {
+            EventDto createdEvent = eventService.update(id, updateEventDto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdEvent);
+        } catch (EntityNotFoundException | IOException e) {
             return ResponseEntity.notFound().build();
         }
     }

@@ -3,7 +3,10 @@ package hr.tvz.volontiraj.mapper;
 import hr.tvz.volontiraj.dto.EventImageDto;
 import hr.tvz.volontiraj.model.Event;
 import hr.tvz.volontiraj.model.EventImage;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class EventImageMapper {
 
     public static EventImage mapImageURLToEventImage(Event event, String imageURL) {
@@ -19,6 +22,4 @@ public class EventImageMapper {
         eventImageDto.setImagePath(eventImage.getImagePath());
         return eventImageDto;
     }
-
-
 }

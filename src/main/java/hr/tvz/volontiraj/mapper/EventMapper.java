@@ -8,10 +8,13 @@ import hr.tvz.volontiraj.model.Event;
 import hr.tvz.volontiraj.model.EventCategory;
 import hr.tvz.volontiraj.model.EventImage;
 import hr.tvz.volontiraj.model.UserEntity;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
 import java.util.List;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class EventMapper {
 
     public static EventDto mapEventToEventDto(Event event) {
@@ -72,7 +75,6 @@ public class EventMapper {
 
     public static Event mapNewEventDtoToEvent(NewEventDto newEventDto) {
         Event event = new Event();
-        event.setId(newEventDto.getId());
         event.setCategory(EventCategory.valueOf(newEventDto.getCategory()));
         event.setTitle(newEventDto.getTitle());
         event.setDescription(newEventDto.getDescription());
@@ -80,11 +82,6 @@ public class EventMapper {
         event.setAddress(newEventDto.getAddress());
         event.setStartDateTime(newEventDto.getStartDateTime());
 
-        if (newEventDto.getCreatorId() != null) {
-            UserEntity creator = new UserEntity();
-            creator.setId(newEventDto.getCreatorId());
-            event.setCreator(creator);
-        }
         return event;
     }
 

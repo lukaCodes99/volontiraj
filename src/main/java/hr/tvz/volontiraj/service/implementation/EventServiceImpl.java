@@ -17,11 +17,9 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -61,8 +59,7 @@ public class EventServiceImpl implements EventService {
             List<EventImageDto> eventImages = eventImageService.findAllByEventId(eventDto.getId()).stream().map(EventImageMapper::mapEventImageToEventImageDto).toList();
             eventDto.setImages(eventImages);
             return eventDto;
-        }
-        else {
+        } else {
             throw new EntityNotFoundException("Event with id: " + id + " not found!");
         }
     }
@@ -86,7 +83,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Event update(Long id, EventDto eventDto) {
+    public EventDto update(Long id, NewEventDto eventDto) throws IOException {
         Optional<Event> existingEvent = eventRepository.findById(id);
         if (existingEvent.isPresent()) {
             Event eventToUpdate = existingEvent.get();
@@ -94,11 +91,29 @@ public class EventServiceImpl implements EventService {
             eventToUpdate.setTitle(eventDto.getTitle());
             eventToUpdate.setDescription(eventDto.getDescription());
             eventToUpdate.setLocation(eventDto.getLocation());
+            eventToUpdate.setAddress(eventDto.getAddress());
             eventToUpdate.setStartDateTime(eventDto.getStartDateTime());
-            return eventRepository.save(eventToUpdate);
-        } else {
+
+            eventRepository.save(eventToUpdate);
+
+            EventDto updatedEvent = EventMapper.mapEventToEventDto(eventToUpdate);
+
+            //mozda treba provjeriti jos ali prvo treba testirati s frontenda ,
+            if (eventDto.getImages() != null ) {
+                eventImageRepository.deleteAllByEventId(eventToUpdate.getId());
+
+                List<String> imagesURL = supabaseService.uploadImages(eventDto.getImages());
+
+                List<EventImage> eventImages = imagesURL.stream()
+                        .map(image -> EventImageMapper.mapImageURLToEventImage(eventToUpdate, image))
+                        .toList();
+                eventImageRepository.saveAll(eventImages);
+                updatedEvent.setImages(eventImages.stream().map(EventImageMapper::mapEventImageToEventImageDto).toList());
+            }
+
+            return updatedEvent;
+        } else
             throw new EntityNotFoundException("Event with id: " + id + " not found!");
-        }
     }
 
     @Override

@@ -1,6 +1,5 @@
 package hr.tvz.volontiraj.dto;
 
-import hr.tvz.volontiraj.model.EventImage;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,7 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class NewEventDto {
-    private Long id;
     private String category;
     private String title;
     private String description;
