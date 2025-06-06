@@ -3,7 +3,10 @@ package hr.tvz.volontiraj.mapper;
 
 import hr.tvz.volontiraj.dto.UserDto;
 import hr.tvz.volontiraj.model.UserEntity;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserMapper {
     public static UserDto mapUserToUserDto(UserEntity user) {
         UserDto userDto = new UserDto();

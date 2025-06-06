@@ -36,4 +36,5 @@ public class Event {
 
     @ManyToMany(mappedBy = "attendingEvents")
     private Set<UserEntity> volunteers;
+
 }

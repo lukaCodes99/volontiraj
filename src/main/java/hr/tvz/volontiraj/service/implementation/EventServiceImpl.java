@@ -1,20 +1,24 @@
 package hr.tvz.volontiraj.service.implementation;
 
-import hr.tvz.volontiraj.dto.EventDto;
-import hr.tvz.volontiraj.dto.HomePageDto;
+import hr.tvz.volontiraj.dto.*;
 import hr.tvz.volontiraj.filterParams.EventFilterParams;
+import hr.tvz.volontiraj.mapper.EventImageMapper;
 import hr.tvz.volontiraj.mapper.EventMapper;
 import hr.tvz.volontiraj.model.Event;
 import hr.tvz.volontiraj.model.EventCategory;
+import hr.tvz.volontiraj.model.EventImage;
 import hr.tvz.volontiraj.model.UserEntity;
 import hr.tvz.volontiraj.repository.EventImageRepository;
 import hr.tvz.volontiraj.repository.EventRepository;
+import hr.tvz.volontiraj.service.EventImageService;
 import hr.tvz.volontiraj.service.EventService;
+import hr.tvz.volontiraj.service.SupabaseService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -24,60 +28,100 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final EventImageRepository eventImageRepository;
 
+    private final EventImageService eventImageService;
+    private final SupabaseService supabaseService;
+
     @Override
-    public List<EventDto> findAllPagedAndFiltered(Pageable pageable, EventFilterParams eventFilterParams) {
+    public List<SearchEventDto> findAllPagedAndFiltered(Pageable pageable, EventFilterParams eventFilterParams) {
         EventCategory eventCategory = eventFilterParams.getCategory() == null ? null : EventCategory.valueOf(eventFilterParams.getCategory());
         List<Event> events = eventRepository
                 .findFilteredAndPaged(
-                    eventCategory,
-                    eventFilterParams.getTitle(),
-                    eventFilterParams.getDescription(),
-                    eventFilterParams.getLocation(),
-                    eventFilterParams.getStartDateTimeFrom(),
-                    eventFilterParams.getStartDateTimeTo(),
-                    eventFilterParams.getCreatorId(),
-                    pageable
+                        eventCategory,
+                        eventFilterParams.getTitle(),
+                        eventFilterParams.getDescription(),
+                        eventFilterParams.getLocation(),
+                        eventFilterParams.getStartDateTimeFrom(),
+                        eventFilterParams.getStartDateTimeTo(),
+                        eventFilterParams.getCreatorId(),
+                        pageable
                 );
 
         return events.stream()
-                    .map(EventMapper::mapEventToEventDto)
-                    .toList();
+                .map(EventMapper::mapEventToSearchEventDto)
+                .toList();
     }
 
     @Override
-    public Event findById(Long id) {
-        return eventRepository.findById(id).orElse(null);
-    }
-
-    @Override
-    public Event save(EventDto eventDto) {
-        Event newEvent = EventMapper.mapEventDtoToEvent(eventDto);
-        return eventRepository.save(newEvent);
-    }
-
-    @Override
-    public Event update(Long id, EventDto eventDto) {
-        Optional<Event> existingEvent = eventRepository.findById(id);
-        if(existingEvent.isPresent()) {
-            Event eventToUpdate = existingEvent.get();
-            eventToUpdate.setCategory(EventCategory.valueOf(eventDto.getCategory()));
-            eventToUpdate.setTitle(eventDto.getTitle());
-            eventToUpdate.setDescription(eventDto.getDescription());
-            eventToUpdate.setLocation(eventDto.getLocation());
-            eventToUpdate.setStartDateTime(eventDto.getStartDateTime());
-            return eventRepository.save(eventToUpdate);
+    public EventDto findById(Long id) {
+        Optional<Event> event = eventRepository.findById(id);
+        if (event.isPresent()) {
+            EventDto eventDto = EventMapper.mapEventToEventDto(event.get());
+            List<EventImageDto> eventImages = eventImageService.findAllByEventId(eventDto.getId()).stream().map(EventImageMapper::mapEventImageToEventImageDto).toList();
+            eventDto.setImages(eventImages);
+            return eventDto;
         } else {
             throw new EntityNotFoundException("Event with id: " + id + " not found!");
         }
     }
 
     @Override
+    public EventDto save(NewEventDto newEventDto) throws IOException {
+        Event newEvent = EventMapper.mapNewEventDtoToEvent(newEventDto);
+        Event savedEvent = eventRepository.save(newEvent);
+
+        List<String> imagesURL = supabaseService.uploadImages(newEventDto.getImages());
+
+        List<EventImage> eventImages = imagesURL.stream()
+                .map(image -> EventImageMapper.mapImageURLToEventImage(savedEvent, image))
+                .toList();
+        eventImageRepository.saveAll(eventImages);
+
+        EventDto eventDto = EventMapper.mapEventToEventDto(savedEvent);
+        eventDto.setImages(eventImages.stream().map(EventImageMapper::mapEventImageToEventImageDto).toList());
+
+        return eventDto;
+    }
+
+    @Override
+    public EventDto update(Long id, NewEventDto eventDto) throws IOException {
+        Optional<Event> existingEvent = eventRepository.findById(id);
+        if (existingEvent.isPresent()) {
+            Event eventToUpdate = existingEvent.get();
+            eventToUpdate.setCategory(EventCategory.valueOf(eventDto.getCategory()));
+            eventToUpdate.setTitle(eventDto.getTitle());
+            eventToUpdate.setDescription(eventDto.getDescription());
+            eventToUpdate.setLocation(eventDto.getLocation());
+            eventToUpdate.setAddress(eventDto.getAddress());
+            eventToUpdate.setStartDateTime(eventDto.getStartDateTime());
+
+            eventRepository.save(eventToUpdate);
+
+            EventDto updatedEvent = EventMapper.mapEventToEventDto(eventToUpdate);
+
+            //mozda treba provjeriti jos ali prvo treba testirati s frontenda ,
+            if (eventDto.getImages() != null ) {
+                eventImageRepository.deleteAllByEventId(eventToUpdate.getId());
+
+                List<String> imagesURL = supabaseService.uploadImages(eventDto.getImages());
+
+                List<EventImage> eventImages = imagesURL.stream()
+                        .map(image -> EventImageMapper.mapImageURLToEventImage(eventToUpdate, image))
+                        .toList();
+                eventImageRepository.saveAll(eventImages);
+                updatedEvent.setImages(eventImages.stream().map(EventImageMapper::mapEventImageToEventImageDto).toList());
+            }
+
+            return updatedEvent;
+        } else
+            throw new EntityNotFoundException("Event with id: " + id + " not found!");
+    }
+
+    @Override
     public void deleteById(Long id) {
         Optional<Event> eventToDelete = eventRepository.findById(id);
-        if(eventToDelete.isPresent()) {
+        if (eventToDelete.isPresent()) {
             eventRepository.deleteById(id);
-        }
-        else throw new EntityNotFoundException("Event with id: " + id + " not found!");
+        } else throw new EntityNotFoundException("Event with id: " + id + " not found!");
     }
 
     @Override
@@ -114,20 +158,20 @@ public class EventServiceImpl implements EventService {
         map.put("people", new ArrayList<>());
 
         events.forEach(event -> {
-                    if (event.getCategory() == EventCategory.PETS) {
-                        HomePageDto homePageDto = EventMapper.mapEventToHomePageDto(event);
-                        eventImageRepository.findImagePathByEventId(event.getId())
-                                .ifPresent(homePageDto::setImagePath);
+            if (event.getCategory() == EventCategory.PETS) {
+                HomePageDto homePageDto = EventMapper.mapEventToHomePageDto(event);
+                eventImageRepository.findImagePathByEventId(event.getId())
+                        .ifPresent(homePageDto::setImagePath);
 
-                        map.get("pets").add(homePageDto);
-                    } else if (event.getCategory() == EventCategory.PEOPLE) {
-                        HomePageDto homePageDto = EventMapper.mapEventToHomePageDto(event);
-                        eventImageRepository.findImagePathByEventId(event.getId())
-                                .ifPresent(homePageDto::setImagePath);
+                map.get("pets").add(homePageDto);
+            } else if (event.getCategory() == EventCategory.PEOPLE) {
+                HomePageDto homePageDto = EventMapper.mapEventToHomePageDto(event);
+                eventImageRepository.findImagePathByEventId(event.getId())
+                        .ifPresent(homePageDto::setImagePath);
 
-                        map.get("people").add(homePageDto);
-                    }
-                });
+                map.get("people").add(homePageDto);
+            }
+        });
         return map;
     }
 }

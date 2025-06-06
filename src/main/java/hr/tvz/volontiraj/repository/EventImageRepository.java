@@ -17,4 +17,5 @@ public interface EventImageRepository extends JpaRepository<EventImage, Long> {
 
     @Query("SELECT e.imagePath FROM EventImage e WHERE e.event.id = :id")
     Optional<String> findImagePathByEventId(Long id);
+
 }

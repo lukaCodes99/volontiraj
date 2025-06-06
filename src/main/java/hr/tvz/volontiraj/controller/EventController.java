@@ -2,19 +2,23 @@ package hr.tvz.volontiraj.controller;
 
 import hr.tvz.volontiraj.dto.EventDto;
 import hr.tvz.volontiraj.dto.HomePageDto;
+import hr.tvz.volontiraj.dto.NewEventDto;
+import hr.tvz.volontiraj.dto.SearchEventDto;
 import hr.tvz.volontiraj.filterParams.EventFilterParams;
-import hr.tvz.volontiraj.mapper.EventMapper;
 import hr.tvz.volontiraj.model.Event;
 import hr.tvz.volontiraj.service.EventService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +32,7 @@ public class EventController {
 
 
     @GetMapping
-    public ResponseEntity<List<EventDto>> getAllEvents(
+    public ResponseEntity<List<SearchEventDto>> getAllEvents(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "startDateTime") String sortBy,
@@ -39,7 +43,7 @@ public class EventController {
         Pageable pageable = PageRequest.of(page, size, sort);
 
         try {
-            List<EventDto> events = eventService.findAllPagedAndFiltered(pageable, filterParams);
+            List<SearchEventDto> events = eventService.findAllPagedAndFiltered(pageable, filterParams);
             return ResponseEntity.ok(events);
         } catch (Exception e) {
             System.out.println("Error fetching events: " + e.getMessage());
@@ -48,9 +52,9 @@ public class EventController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Event> getEventById(@PathVariable Long id) {
+    public ResponseEntity<EventDto> getEventById(@PathVariable Long id) {
         try {
-            Event event = eventService.findById(id);
+            EventDto event = eventService.findById(id);
             return ResponseEntity.ok(event);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
@@ -69,8 +73,8 @@ public class EventController {
     }
 
     @PostMapping
-    public ResponseEntity<Event> createEvent(@RequestBody EventDto eventDto) {
-        Event createdEvent = eventService.save(eventDto);
+    public ResponseEntity<EventDto> createEvent(@ModelAttribute NewEventDto newEventDto) throws IOException {
+        EventDto createdEvent = eventService.save(newEventDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdEvent);
     }
 
@@ -78,10 +82,19 @@ public class EventController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
         try {
-
             eventService.deleteById(id);
             return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<EventDto> updateEvent(@PathVariable Long id, @ModelAttribute NewEventDto updateEventDto) {
+        try {
+            EventDto createdEvent = eventService.update(id, updateEventDto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdEvent);
+        } catch (EntityNotFoundException | IOException e) {
             return ResponseEntity.notFound().build();
         }
     }

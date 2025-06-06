@@ -2,12 +2,19 @@ package hr.tvz.volontiraj.mapper;
 
 import hr.tvz.volontiraj.dto.EventDto;
 import hr.tvz.volontiraj.dto.HomePageDto;
+import hr.tvz.volontiraj.dto.NewEventDto;
+import hr.tvz.volontiraj.dto.SearchEventDto;
 import hr.tvz.volontiraj.model.Event;
 import hr.tvz.volontiraj.model.EventCategory;
+import hr.tvz.volontiraj.model.EventImage;
 import hr.tvz.volontiraj.model.UserEntity;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
+import java.util.List;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class EventMapper {
 
     public static EventDto mapEventToEventDto(Event event) {
@@ -17,13 +24,16 @@ public class EventMapper {
         eventDto.setTitle(event.getTitle());
         eventDto.setDescription(event.getDescription());
         eventDto.setLocation(event.getLocation());
+        eventDto.setAddress(event.getAddress());
         eventDto.setStartDateTime(event.getStartDateTime());
         eventDto.setUpvote(event.getUpvote());
 
         if (event.getCreator() != null) {
             eventDto.setCreatorId(event.getCreator().getId());
         }
-        eventDto.setVolunteerCount(event.getVolunteers().size());
+        if(event.getVolunteers() != null) {
+            eventDto.setVolunteerCount(event.getVolunteers().size());
+        }
 
         return eventDto;
     }
@@ -35,6 +45,7 @@ public class EventMapper {
         event.setTitle(eventDto.getTitle());
         event.setDescription(eventDto.getDescription());
         event.setLocation(eventDto.getLocation());
+        event.setAddress(eventDto.getAddress());
         event.setStartDateTime(eventDto.getStartDateTime());
         event.setUpvote(eventDto.getUpvote());
 
@@ -62,4 +73,29 @@ public class EventMapper {
         return homePageDto;
     }
 
+    public static Event mapNewEventDtoToEvent(NewEventDto newEventDto) {
+        Event event = new Event();
+        event.setCategory(EventCategory.valueOf(newEventDto.getCategory()));
+        event.setTitle(newEventDto.getTitle());
+        event.setDescription(newEventDto.getDescription());
+        event.setLocation(newEventDto.getLocation());
+        event.setAddress(newEventDto.getAddress());
+        event.setStartDateTime(newEventDto.getStartDateTime());
+
+        return event;
+    }
+
+    public static SearchEventDto mapEventToSearchEventDto(Event event) {
+        SearchEventDto searchEventDto = new SearchEventDto();
+        searchEventDto.setId(event.getId());
+        searchEventDto.setCategory(event.getCategory());
+        searchEventDto.setTitle(event.getTitle());
+        searchEventDto.setLocation(event.getLocation());
+        searchEventDto.setStartDateTime(event.getStartDateTime());
+
+        searchEventDto.setCreatorId(event.getCreator().getId());
+        searchEventDto.setCreatorProfileImageURL(event.getCreator().getProfilePicturePath());
+
+        return searchEventDto;
+    }
 }
