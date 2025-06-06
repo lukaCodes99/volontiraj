@@ -72,7 +72,7 @@ public class EventServiceImpl implements EventService {
         List<String> imagesURL = supabaseService.uploadImages(newEventDto.getImages());
 
         List<EventImage> eventImages = imagesURL.stream()
-                .map(image -> new EventImage(image, savedEvent)).toList();
+                .map(imageURL -> new EventImage(imageURL, savedEvent)).toList();
 
         eventImageRepository.saveAll(eventImages);
 
@@ -105,7 +105,7 @@ public class EventServiceImpl implements EventService {
                 List<String> imagesURL = supabaseService.uploadImages(eventDto.getImages());
 
                 List<EventImage> eventImages = imagesURL.stream()
-                        .map(image -> new EventImage(image, eventToUpdate)).toList();
+                        .map(imageURL -> new EventImage(imageURL, eventToUpdate)).toList();
 
                 eventImageRepository.saveAll(eventImages);
                 updatedEvent.setImages(eventImages.stream().map(EventImageMapper::mapEventImageToEventImageDto).toList());
