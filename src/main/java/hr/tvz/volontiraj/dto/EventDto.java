@@ -16,6 +16,7 @@ public class EventDto {
     private String category;
     private String title;
     private String description;
+    private String details;
     private String location;
     private String address;
     private LocalDateTime startDateTime;

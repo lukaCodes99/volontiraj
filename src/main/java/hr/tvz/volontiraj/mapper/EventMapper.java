@@ -23,6 +23,7 @@ public class EventMapper {
         eventDto.setCategory(event.getCategory().toString());
         eventDto.setTitle(event.getTitle());
         eventDto.setDescription(event.getDescription());
+        eventDto.setDetails(event.getDetails());
         eventDto.setLocation(event.getLocation());
         eventDto.setAddress(event.getAddress());
         eventDto.setStartDateTime(event.getStartDateTime());
@@ -44,6 +45,7 @@ public class EventMapper {
         event.setCategory(EventCategory.valueOf(eventDto.getCategory()));
         event.setTitle(eventDto.getTitle());
         event.setDescription(eventDto.getDescription());
+        event.setDescription(eventDto.getDetails());
         event.setLocation(eventDto.getLocation());
         event.setAddress(eventDto.getAddress());
         event.setStartDateTime(eventDto.getStartDateTime());
@@ -78,6 +80,7 @@ public class EventMapper {
         event.setCategory(EventCategory.valueOf(newEventDto.getCategory()));
         event.setTitle(newEventDto.getTitle());
         event.setDescription(newEventDto.getDescription());
+        event.setDetails(newEventDto.getDetails());
         event.setLocation(newEventDto.getLocation());
         event.setAddress(newEventDto.getAddress());
         event.setStartDateTime(newEventDto.getStartDateTime());

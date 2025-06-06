@@ -72,8 +72,8 @@ public class EventServiceImpl implements EventService {
         List<String> imagesURL = supabaseService.uploadImages(newEventDto.getImages());
 
         List<EventImage> eventImages = imagesURL.stream()
-                .map(image -> EventImageMapper.mapImageURLToEventImage(savedEvent, image))
-                .toList();
+                .map(imageURL -> new EventImage(imageURL, savedEvent)).toList();
+
         eventImageRepository.saveAll(eventImages);
 
         EventDto eventDto = EventMapper.mapEventToEventDto(savedEvent);
@@ -90,6 +90,7 @@ public class EventServiceImpl implements EventService {
             eventToUpdate.setCategory(EventCategory.valueOf(eventDto.getCategory()));
             eventToUpdate.setTitle(eventDto.getTitle());
             eventToUpdate.setDescription(eventDto.getDescription());
+            eventToUpdate.setDetails(eventDto.getDetails());
             eventToUpdate.setLocation(eventDto.getLocation());
             eventToUpdate.setAddress(eventDto.getAddress());
             eventToUpdate.setStartDateTime(eventDto.getStartDateTime());
@@ -99,14 +100,14 @@ public class EventServiceImpl implements EventService {
             EventDto updatedEvent = EventMapper.mapEventToEventDto(eventToUpdate);
 
             //mozda treba provjeriti jos ali prvo treba testirati s frontenda ,
-            if (eventDto.getImages() != null ) {
+            if (eventDto.getImages() != null) {
                 eventImageRepository.deleteAllByEventId(eventToUpdate.getId());
 
                 List<String> imagesURL = supabaseService.uploadImages(eventDto.getImages());
 
                 List<EventImage> eventImages = imagesURL.stream()
-                        .map(image -> EventImageMapper.mapImageURLToEventImage(eventToUpdate, image))
-                        .toList();
+                        .map(imageURL -> new EventImage(imageURL, eventToUpdate)).toList();
+
                 eventImageRepository.saveAll(eventImages);
                 updatedEvent.setImages(eventImages.stream().map(EventImageMapper::mapEventImageToEventImageDto).toList());
             }
