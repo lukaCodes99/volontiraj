@@ -12,6 +12,12 @@ import lombok.NoArgsConstructor;
 @Table(name = "EVENT_IMAGE")
 public class EventImage {
 //ovo će se pozvati posebno da se resursi ne troše bezveze!
+
+    public EventImage(String imagePath, Event event) {
+        this.imagePath = imagePath;
+        this.event = event;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

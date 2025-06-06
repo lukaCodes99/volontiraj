@@ -72,8 +72,8 @@ public class EventServiceImpl implements EventService {
         List<String> imagesURL = supabaseService.uploadImages(newEventDto.getImages());
 
         List<EventImage> eventImages = imagesURL.stream()
-                .map(image -> EventImageMapper.mapImageURLToEventImage(savedEvent, image))
-                .toList();
+                .map(image -> new EventImage(image, savedEvent)).toList();
+
         eventImageRepository.saveAll(eventImages);
 
         EventDto eventDto = EventMapper.mapEventToEventDto(savedEvent);
@@ -99,14 +99,14 @@ public class EventServiceImpl implements EventService {
             EventDto updatedEvent = EventMapper.mapEventToEventDto(eventToUpdate);
 
             //mozda treba provjeriti jos ali prvo treba testirati s frontenda ,
-            if (eventDto.getImages() != null ) {
+            if (eventDto.getImages() != null) {
                 eventImageRepository.deleteAllByEventId(eventToUpdate.getId());
 
                 List<String> imagesURL = supabaseService.uploadImages(eventDto.getImages());
 
                 List<EventImage> eventImages = imagesURL.stream()
-                        .map(image -> EventImageMapper.mapImageURLToEventImage(eventToUpdate, image))
-                        .toList();
+                        .map(image -> new EventImage(image, eventToUpdate)).toList();
+
                 eventImageRepository.saveAll(eventImages);
                 updatedEvent.setImages(eventImages.stream().map(EventImageMapper::mapEventImageToEventImageDto).toList());
             }
