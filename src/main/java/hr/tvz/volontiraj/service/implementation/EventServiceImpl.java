@@ -90,6 +90,7 @@ public class EventServiceImpl implements EventService {
             eventToUpdate.setCategory(EventCategory.valueOf(eventDto.getCategory()));
             eventToUpdate.setTitle(eventDto.getTitle());
             eventToUpdate.setDescription(eventDto.getDescription());
+            eventToUpdate.setDetails(eventDto.getDetails());
             eventToUpdate.setLocation(eventDto.getLocation());
             eventToUpdate.setAddress(eventDto.getAddress());
             eventToUpdate.setStartDateTime(eventDto.getStartDateTime());
