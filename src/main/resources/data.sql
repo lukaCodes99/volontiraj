@@ -17,7 +17,7 @@ INSERT INTO EVENT (category, title, description, location, address, startDateTim
 INSERT INTO EVENT (category, title, description, location, address, startDateTime, upvote, creatorId) VALUES
              ('PEOPLE', 'Homeless Shelter Meal Service', 'Prepare and serve meals at the local homeless shelter', 'SPLIT','Hope Shelter', '2023-11-18 17:00:00', 15, 2),
              ('PEOPLE', 'Senior Citizen Companionship', 'Visit and spend time with elderly residents', 'ZAGREB','Sunny Pines Retirement Home', '2023-11-22 13:00:00', 7, 3),
-             ('PEOPLE', 'Youth Mentoring Program', 'Mentor underprivileged youth in academics and life skills','OSIJEK', 'Community Center', '2023-11-26 15:00:00', 10, 3);
+              ('PEOPLE', 'Youth Mentoring Program', 'Mentor underprivileged youth in academics and life skills','OSIJEK', 'Community Center', '2023-11-26 15:00:00', 10, 3);
 
 -- COMMUNITY category events (3)
 INSERT INTO EVENT (category, title, description, location, address, startDateTime, upvote, creatorId) VALUES
