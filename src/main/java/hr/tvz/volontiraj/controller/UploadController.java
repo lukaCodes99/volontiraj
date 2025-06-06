@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/images")
+@CrossOrigin(origins = "http://localhost:4200")
 public class UploadController {
 
     private SupabaseService supabaseService;
