@@ -10,6 +10,7 @@ import hr.tvz.volontiraj.model.EventImage;
 import hr.tvz.volontiraj.model.UserEntity;
 import hr.tvz.volontiraj.repository.EventImageRepository;
 import hr.tvz.volontiraj.repository.EventRepository;
+import hr.tvz.volontiraj.repository.UserRepository;
 import hr.tvz.volontiraj.service.EventImageService;
 import hr.tvz.volontiraj.service.EventService;
 import hr.tvz.volontiraj.service.SupabaseService;
@@ -30,6 +31,7 @@ public class EventServiceImpl implements EventService {
 
     private final EventImageService eventImageService;
     private final SupabaseService supabaseService;
+    private final UserRepository userRepository;
 
     @Override
     public List<SearchEventDto> findAllPagedAndFiltered(Pageable pageable, EventFilterParams eventFilterParams) {
@@ -67,19 +69,25 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventDto save(NewEventDto newEventDto) throws IOException {
         Event newEvent = EventMapper.mapNewEventDtoToEvent(newEventDto);
-        Event savedEvent = eventRepository.save(newEvent);
 
-        List<String> imagesURL = supabaseService.uploadImages(newEventDto.getImages());
+        Optional<UserEntity> user = userRepository.findById(newEventDto.getCreatorId());
 
-        List<EventImage> eventImages = imagesURL.stream()
-                .map(imageURL -> new EventImage(imageURL, savedEvent)).toList();
+        if (user.isPresent()) {
+            newEvent.setCreator(user.get());
+            Event savedEvent = eventRepository.save(newEvent);
 
-        eventImageRepository.saveAll(eventImages);
+            List<String> imagesURL = supabaseService.uploadImages(newEventDto.getImages());
 
-        EventDto eventDto = EventMapper.mapEventToEventDto(savedEvent);
-        eventDto.setImages(eventImages.stream().map(EventImageMapper::mapEventImageToEventImageDto).toList());
+            List<EventImage> eventImages = imagesURL.stream()
+                    .map(imageURL -> new EventImage(imageURL, savedEvent)).toList();
 
-        return eventDto;
+            eventImageRepository.saveAll(eventImages);
+
+            EventDto eventDto = EventMapper.mapEventToEventDto(savedEvent);
+            eventDto.setImages(eventImages.stream().map(EventImageMapper::mapEventImageToEventImageDto).toList());
+
+            return eventDto;
+        } else throw new EntityNotFoundException("User with id: " + newEventDto.getCreatorId() + " not found!");
     }
 
     @Override

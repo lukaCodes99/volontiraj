@@ -45,7 +45,7 @@ public class EventMapper {
         event.setCategory(EventCategory.valueOf(eventDto.getCategory()));
         event.setTitle(eventDto.getTitle());
         event.setDescription(eventDto.getDescription());
-        event.setDescription(eventDto.getDetails());
+        event.setDetails(eventDto.getDetails());
         event.setLocation(eventDto.getLocation());
         event.setAddress(eventDto.getAddress());
         event.setStartDateTime(eventDto.getStartDateTime());
