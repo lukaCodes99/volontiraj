@@ -1,11 +1,11 @@
 -- noinspection SqlNoDataSourceInspectionForFile
 
 -- Insert users
-INSERT INTO USER_ENTITY (profilePicturePath, username, name, surname, password, email, bio) VALUES
-            ('https://randomuser.me/api/portraits/men/1.jpg', 'john_doe', 'John', 'Doe', '$2a$12$ncJbyg5JgxHi6ShDwgRB2OF8gHJY8vmB1.a1zhx90eSHIt7WIbYGq', 'john.doe@example.com', 'Animal lover and volunteer'),
-            ('https://randomuser.me/api/portraits/women/2.jpg', 'jane_smith', 'Jane', 'Smith', 'pass', 'jane.smith@example.com', 'Community activist'),
-            ('https://randomuser.me/api/portraits/men/3.jpg', 'mike_wilson', 'Mike', 'Wilson', 'pass', 'mike.wilson@example.com', 'Helping people is my passion'),
-            ('https://randomuser.me/api/portraits/women/4.jpg', 'sarah_jones', 'Sarah', 'Jones', 'pass', 'sarah.jones@example.com', 'Environmental enthusiast');
+INSERT INTO USER_ENTITY (profilePicturePath, username, name, surname, password, email, bio, role) VALUES
+            ('https://randomuser.me/api/portraits/men/1.jpg', 'john_doe', 'John', 'Doe', '$2a$12$ncJbyg5JgxHi6ShDwgRB2OF8gHJY8vmB1.a1zhx90eSHIt7WIbYGq', 'john.doe@example.com', 'Animal lover and volunteer', 'USER'),
+            ('https://randomuser.me/api/portraits/women/2.jpg', 'jane_smith', 'Jane', 'Smith', '$2a$12$ncJbyg5JgxHi6ShDwgRB2OF8gHJY8vmB1.a1zhx90eSHIt7WIbYGq', 'jane.smith@example.com', 'Community activist', null),
+            ('https://randomuser.me/api/portraits/men/3.jpg', 'mike_wilson', 'Mike', 'Wilson', 'pass', 'mike.wilson@example.com', 'Helping people is my passion', 'USER'),
+            ('https://randomuser.me/api/portraits/women/4.jpg', 'sarah_jones', 'Sarah', 'Jones', 'pass', 'sarah.jones@example.com', 'Environmental enthusiast', 'USER');
 
 -- PETS category events (3)
 INSERT INTO EVENT (category, title, description, location, address, startDateTime, upvote, creatorId) VALUES

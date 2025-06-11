@@ -27,6 +27,8 @@ public class UserEntity {
     private String password;
     private String email;
     private String bio;
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
 
     @ManyToMany
     @JoinTable(

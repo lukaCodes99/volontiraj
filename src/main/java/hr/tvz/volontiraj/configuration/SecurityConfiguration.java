@@ -1,6 +1,7 @@
 package hr.tvz.volontiraj.configuration;
 
 import hr.tvz.volontiraj.filter.JwtAuthFilter;
+import hr.tvz.volontiraj.model.UserRole;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +19,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.util.Arrays;
+
 @Configuration
 @EnableWebSecurity
 @AllArgsConstructor
@@ -34,14 +37,20 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        String[] roles = Arrays.stream(UserRole.values())
+                .map(Enum::name)
+                .toArray(String[]::new);
+
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize ->
                         authorize
-                                .requestMatchers("/auth/api/v1/login", "/auth/api/v1/refreshToken","/auth/api/v1/logout").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/event").authenticated()
-                                .requestMatchers(HttpMethod.PUT, "/api/event/**").authenticated()
-                                .requestMatchers(HttpMethod.DELETE, "/api/event/**").authenticated()
+                                .requestMatchers("/auth/api/v1/login", "/auth/api/v1/refreshToken", "/auth/api/v1/logout").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/event").hasAnyRole(roles)
+                                .requestMatchers(HttpMethod.PUT, "/api/event/**").hasAnyRole(roles)
+                                .requestMatchers(HttpMethod.DELETE, "/api/event/**").hasAnyRole(roles)
+                                .requestMatchers(HttpMethod.GET, "/api/event/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/user/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

@@ -6,6 +6,7 @@ import hr.tvz.volontiraj.model.RefreshToken;
 import hr.tvz.volontiraj.model.UserEntity;
 import hr.tvz.volontiraj.service.JwtService;
 import hr.tvz.volontiraj.service.RefreshTokenService;
+import hr.tvz.volontiraj.service.UserService;
 import hr.tvz.volontiraj.util.CookieUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -84,8 +85,8 @@ public class AuthController {
 
     @PostMapping("/api/v1/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
-        CookieUtil.clearCookie(response,jwtProperties.getRefreshTokenId(), "/auth/api/v1/refresh");
-        CookieUtil.clearCookie(response,jwtProperties.getAccessToken(), "/api");
+        CookieUtil.clearCookie(response, jwtProperties.getRefreshTokenId(), "/auth/api/v1/refresh");
+        CookieUtil.clearCookie(response, jwtProperties.getAccessToken(), "/api");
         return ResponseEntity.noContent().build();
     }
 
