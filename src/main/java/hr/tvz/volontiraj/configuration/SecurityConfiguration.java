@@ -24,7 +24,6 @@ import java.util.Arrays;
 @Configuration
 @EnableWebSecurity
 @AllArgsConstructor
-@lombok.extern.slf4j.Slf4j
 public class SecurityConfiguration {
     private UserDetailsService userDetailsService;
 
@@ -45,6 +44,7 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize ->
                         authorize
+                                .requestMatchers("/auth/api/v1/login").anonymous()
                                 .requestMatchers("/auth/api/v1/login", "/auth/api/v1/refreshToken", "/auth/api/v1/logout").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/event").hasAnyRole(roles)
                                 .requestMatchers(HttpMethod.PUT, "/api/event/**").hasAnyRole(roles)

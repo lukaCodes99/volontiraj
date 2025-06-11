@@ -26,7 +26,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/event")
 @AllArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class EventController {
 
     private final EventService eventService;

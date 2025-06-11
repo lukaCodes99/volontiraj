@@ -28,7 +28,7 @@ public class CookieUtil {
         return ResponseCookie.from(refreshTokenName, refreshTokenId)
                 .httpOnly(true)
                 .secure(true)
-                .path("/auth/api/v1/refresh")
+                .path("/auth/api/v1")
                 .maxAge(Duration.ofDays(15))
                 .sameSite("Strict")
                 .build();

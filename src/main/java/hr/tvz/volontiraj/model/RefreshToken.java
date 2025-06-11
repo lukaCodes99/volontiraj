@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 
+import static jakarta.persistence.GenerationType.IDENTITY;
+
 @Entity
 @Data
 @AllArgsConstructor
@@ -15,8 +17,8 @@ import java.time.Instant;
 @Builder
 public class RefreshToken {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @GeneratedValue(strategy = IDENTITY)
+    private Long id;
     private String token;
     private Instant expiryDate;
     @OneToOne

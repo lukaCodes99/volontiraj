@@ -1,6 +1,7 @@
 package hr.tvz.volontiraj.service;
 
 
+import hr.tvz.volontiraj.model.RefreshToken;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -21,7 +22,7 @@ import java.util.function.Function;
 public class JwtService {
     private RefreshTokenService refreshTokenService;
 
-    public static final String SECRET = "357638792F423F4428472B4B6250655368566D597133743677397A2443264623";
+    public static final String SECRET = "357638792F423F4428472B4B6250655368566D597133743677397A2443264621";
 
     public String extractEmail(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -59,7 +60,7 @@ public class JwtService {
         return createToken(claims, email);
     }
 
-    private void deleteOldRefreshToken(String refreshToken) {
+    private void deleteOldRefreshToken(RefreshToken refreshToken) {
         refreshTokenService.deleteRefreshToken(refreshToken);
     }
 
