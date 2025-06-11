@@ -28,7 +28,7 @@ public class CookieUtil {
         return ResponseCookie.from(refreshTokenName, refreshTokenId)
                 .httpOnly(true)
                 .secure(true)
-                .path("/auth/v1/refresh")
+                .path("/auth/api/v1/refresh")
                 .maxAge(Duration.ofDays(15))
                 .sameSite("Strict")
                 .build();
@@ -42,6 +42,19 @@ public class CookieUtil {
     public static void addRefreshTokenIdCookieToResponse(HttpServletResponse response, String refreshTokenId, String refreshTokenName) {
         ResponseCookie cookie = createRefreshTokenIdCookie(refreshTokenId, refreshTokenName);
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+    }
+
+
+    public static void clearCookie(HttpServletResponse response, String cookieName, String path) {
+        ResponseCookie clearedCookie = ResponseCookie.from(cookieName, "")
+                .httpOnly(true)
+                .secure(true)
+                .path(path)
+                .maxAge(0)
+                .sameSite("Strict")
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, clearedCookie.toString());
     }
 
 

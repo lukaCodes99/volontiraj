@@ -39,9 +39,9 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize ->
                         authorize
                                 .requestMatchers("/auth/api/v1/login", "/auth/api/v1/refreshToken","/auth/api/v1/logout").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/event").hasAnyRole("ADMIN", "USER")
-                                .requestMatchers(HttpMethod.PUT, "/api/event/**").hasAnyRole("ADMIN", "USER")
-                                .requestMatchers(HttpMethod.DELETE, "/api/event/**").hasAnyRole("ADMIN", "USER")
+                                .requestMatchers(HttpMethod.POST, "/api/event").authenticated()
+                                .requestMatchers(HttpMethod.PUT, "/api/event/**").authenticated()
+                                .requestMatchers(HttpMethod.DELETE, "/api/event/**").authenticated()
                                 .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

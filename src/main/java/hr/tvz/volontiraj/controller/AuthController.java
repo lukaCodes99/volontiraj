@@ -62,7 +62,7 @@ public class AuthController {
     public ResponseEntity<Void> refreshToken(HttpServletRequest request, HttpServletResponse response) {
 
         String refreshTokenId = Arrays.stream(Optional.ofNullable(request.getCookies()).orElse(new Cookie[0]))
-                .filter(c -> "refreshTokenId".equals(c.getName()))
+                .filter(c -> jwtProperties.getRefreshTokenId().equals(c.getName()))
                 .map(Cookie::getValue)
                 .findFirst()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
@@ -83,8 +83,10 @@ public class AuthController {
     }
 
     @PostMapping("/api/v1/logout")
-    public ResponseEntity<Void> logout(@RequestBody Long userId) {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        CookieUtil.clearCookie(response,jwtProperties.getRefreshTokenId(), "/auth/api/v1/refresh");
+        CookieUtil.clearCookie(response,jwtProperties.getAccessToken(), "/api");
+        return ResponseEntity.noContent().build();
     }
 
 }

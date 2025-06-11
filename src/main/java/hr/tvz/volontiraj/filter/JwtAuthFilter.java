@@ -1,5 +1,6 @@
 package hr.tvz.volontiraj.filter;
 
+import hr.tvz.volontiraj.configuration.JwtProperties;
 import hr.tvz.volontiraj.service.JwtService;
 import hr.tvz.volontiraj.service.MyUserDetailsService;
 import jakarta.servlet.FilterChain;
@@ -25,24 +26,26 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private MyUserDetailsService userDetailService;
 
+    private final JwtProperties jwtProperties;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
 
-        if (request.getRequestURI().startsWith("/api/") && !request.getRequestURI().startsWith("/auth/")) {
+        if (request.getRequestURI().startsWith("/api/")) {
             String token = null;
             String email = null;
             Cookie[] cookies = request.getCookies();
-            String cookieName = "accessToken";
             if (cookies != null) {
                 for (Cookie cookie : cookies) {
-                    if (cookieName.equals(cookie.getName())) {
+                    if (jwtProperties.getAccessToken().equals(cookie.getName())) {
                         token = cookie.getValue();
                         email = jwtService.extractEmail(token);
                         break;
                     }
                 }
             } else {
+                log.info("No cookie found in request");
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 filterChain.doFilter(request, response);
             }
