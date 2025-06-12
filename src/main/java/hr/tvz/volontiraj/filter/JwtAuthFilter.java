@@ -45,11 +45,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                         break;
                     }
                 }
-            } else {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                filterChain.doFilter(request, response);
             }
-
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailService.loadUserByUsername(email);
                 if (jwtService.validateToken(token, userDetails)) {
