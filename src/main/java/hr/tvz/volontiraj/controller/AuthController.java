@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
@@ -86,6 +87,27 @@ public class AuthController {
         String accessToken = jwtService.generateToken(user.getEmail());
 
         CookieUtil.addAccessTokenCookieToResponse(response, accessToken, jwtProperties.getAccessToken());
+
+        return ResponseEntity.ok(UserMapper.mapUserToUserDto(user));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserDto> getCurrentUser(HttpServletRequest request, HttpServletResponse response) {
+
+        String refreshTokenId = Arrays.stream(Optional.ofNullable(request.getCookies()).orElse(new Cookie[0]))
+                .filter(c -> jwtProperties.getRefreshTokenId().equals(c.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+
+        RefreshToken refreshToken = refreshTokenService.findByTokenId(Long.valueOf(refreshTokenId));
+
+        if (refreshToken.getExpiryDate().isBefore(Instant.now())) {
+            refreshTokenService.deleteRefreshToken(refreshToken); // optional cleanup
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Refresh token expired");
+        }
+
+        UserEntity user = userService.findByEmail(refreshToken.getUserInfo().getEmail());
 
         return ResponseEntity.ok(UserMapper.mapUserToUserDto(user));
     }
