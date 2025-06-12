@@ -2,6 +2,7 @@ package hr.tvz.volontiraj.configuration;
 
 import hr.tvz.volontiraj.filter.JwtAuthFilter;
 import hr.tvz.volontiraj.model.UserRole;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -24,6 +25,7 @@ import java.util.Arrays;
 @Configuration
 @EnableWebSecurity
 @AllArgsConstructor
+@lombok.extern.slf4j.Slf4j
 public class SecurityConfiguration {
     private UserDetailsService userDetailsService;
 
@@ -45,7 +47,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize ->
                         authorize
                                 .requestMatchers("/auth/api/v1/login").anonymous()
-                                .requestMatchers("/auth/api/v1/login", "/auth/api/v1/refreshToken", "/auth/api/v1/logout").permitAll()
+                                .requestMatchers("/auth/api/v1/login", "/auth/api/v1/refreshToken", "/auth/api/v1/logout", "/auth/api/v1/me").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/event").hasAnyRole(roles)
                                 .requestMatchers(HttpMethod.PUT, "/api/event/**").hasAnyRole(roles)
                                 .requestMatchers(HttpMethod.DELETE, "/api/event/**").hasAnyRole(roles)
