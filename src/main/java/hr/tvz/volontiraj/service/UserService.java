@@ -13,4 +13,7 @@
         public UserDto update(Long id, UserEntity user);
 
         public void deleteById(Long id);
+
+        public UserEntity findByEmail(String email);
+
     }

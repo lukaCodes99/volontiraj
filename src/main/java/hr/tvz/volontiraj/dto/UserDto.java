@@ -1,5 +1,6 @@
 package hr.tvz.volontiraj.dto;
 
+import hr.tvz.volontiraj.model.UserRole;
 import lombok.Data;
 
 @Data
@@ -11,4 +12,5 @@ public class UserDto {
     private String surname;
     private String email;
     private String bio;
+    private UserRole role;
 }
