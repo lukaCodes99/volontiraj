@@ -30,7 +30,7 @@ public class AdminServiceImpl implements AdminService {
         List<Object[]> eventCounts = eventRepository.countEventsByCategory();
         return eventCounts.stream()
                 .collect(Collectors.toMap(
-                        e -> EventCategory.valueOf((String) e[0]),
+                        e -> (EventCategory) e[0],
                         e -> (Long) e[1]
                 ));
     }
