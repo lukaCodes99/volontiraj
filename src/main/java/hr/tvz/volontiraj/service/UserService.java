@@ -16,4 +16,6 @@
 
         public UserEntity findByEmail(String email);
 
+        public String currentUserEmail();
+
     }

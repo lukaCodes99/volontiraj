@@ -40,4 +40,13 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "SELECT e FROM Event e WHERE e.category = 'PEOPLE' "+
             "ORDER BY e.id DESC LIMIT 4 ")
     List<Event> findLatestForHomePage();
+
+
+    @Query("SELECT e.category, COUNT(e) FROM Event e GROUP BY e.category")
+    List<Object[]> countEventsByCategory();
+
+    @Query("SELECT e FROM Event e ORDER BY e.upvote DESC LIMIT 5")
+    List<Event> findTop5ByOrderByUpvoteDesc();
+
+    long countByCategory(EventCategory category);
 }

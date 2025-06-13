@@ -7,6 +7,7 @@ import hr.tvz.volontiraj.repository.UserRepository;
 import hr.tvz.volontiraj.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -49,4 +50,13 @@ public class UserServiceImpl implements UserService {
     public UserEntity findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
+
+    @Override
+    public String currentUserEmail() {
+        //Get the currently authenticated user from the security context
+        System.out.println("Current user: " + SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        return SecurityContextHolder.getContext().getAuthentication().getName();
+    }
+
+
 }

@@ -17,6 +17,8 @@ import hr.tvz.volontiraj.service.SupabaseService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -94,10 +96,14 @@ public class EventServiceImpl implements EventService {
     public EventDto update(Long id, NewEventDto eventDto) throws IOException {
         Optional<Event> existingEvent = eventRepository.findById(id);
         if (existingEvent.isPresent()) {
+            String creatorEmail = existingEvent.get().getCreator().getEmail();
+            if(!creatorEmail.equals(SecurityContextHolder.getContext().getAuthentication().getName())) {
+                throw new AccessDeniedException("You do not have permission to delete this event.");
+            }
             Event eventToUpdate = existingEvent.get();
             eventToUpdate.setCategory(EventCategory.valueOf(eventDto.getCategory()));
-            eventToUpdate.setTitle(eventDto.getTitle());
             eventToUpdate.setDescription(eventDto.getDescription());
+            eventToUpdate.setTitle(eventDto.getTitle());
             eventToUpdate.setDetails(eventDto.getDetails());
             eventToUpdate.setLocation(eventDto.getLocation());
             eventToUpdate.setAddress(eventDto.getAddress());
@@ -129,7 +135,12 @@ public class EventServiceImpl implements EventService {
     public void deleteById(Long id) {
         Optional<Event> eventToDelete = eventRepository.findById(id);
         if (eventToDelete.isPresent()) {
-            eventRepository.deleteById(id);
+            String creatorEmail = eventToDelete.get().getCreator().getEmail();
+            if(creatorEmail.equals(SecurityContextHolder.getContext().getAuthentication().getName())) {
+                eventRepository.deleteById(id);
+            } else {
+                throw new AccessDeniedException("You do not have permission to delete this event.");
+            }
         } else throw new EntityNotFoundException("Event with id: " + id + " not found!");
     }
 

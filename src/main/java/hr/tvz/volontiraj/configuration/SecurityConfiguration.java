@@ -38,21 +38,13 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        String[] roles = Arrays.stream(UserRole.values())
-                .map(Enum::name)
-                .toArray(String[]::new);
-
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize ->
                         authorize
                                 .requestMatchers("/auth/api/v1/login").anonymous()
                                 .requestMatchers("/auth/api/v1/login", "/auth/api/v1/refreshToken", "/auth/api/v1/logout", "/auth/api/v1/me").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/event").hasAnyRole(roles)
-                                .requestMatchers(HttpMethod.PUT, "/api/event/**").hasAnyRole(roles)
-                                .requestMatchers(HttpMethod.DELETE, "/api/event/**").hasAnyRole(roles)
                                 .requestMatchers(HttpMethod.GET, "/api/event/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/user/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
