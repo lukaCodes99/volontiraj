@@ -22,10 +22,15 @@ public class SupabaseServiceImpl implements SupabaseService {
     @Value("${supabase.bucket}")
     private String supabaseBucket;
 
+    private final RestTemplate restTemplate;
+    public SupabaseServiceImpl(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
+
     @Override
     public List<String> uploadImages(List<MultipartFile> files) throws IOException {
         List<String> uploadedPaths = new ArrayList<>();
-        RestTemplate restTemplate = new RestTemplate();
+       // RestTemplate restTemplate = new RestTemplate();
 
         for (MultipartFile file : files) {
             if(!file.isEmpty()) {
