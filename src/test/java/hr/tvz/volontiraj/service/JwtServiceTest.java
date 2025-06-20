@@ -40,18 +40,17 @@ class JwtServiceTest {
     }
 
     @Test
-    void validateToken_ShouldReturnFalse_ForInvalidToken() {
+    void validateToken_ShouldReturnFalse_ForExpiredToken() {
         String email = "user@example.com";
-        String badToken = JwtUtilTest.generateTokenWithExpiry(email, Duration.ofMinutes(-5));
-        assertNotNull(badToken);
+        String expiredToken = JwtUtilTest.generateTokenWithExpiry(email, Duration.ofMinutes(-5));
+
         UserDetails userDetails = User.withUsername(email).password("pass").authorities("USER").build();
 
-        ExpiredJwtException  expiredJwtException = assertThrows(ExpiredJwtException.class, () -> {
-            jwtService.validateToken(badToken, userDetails);
-        });
+        boolean isValid = jwtService.validateToken(expiredToken, userDetails);
 
-        assertTrue(expiredJwtException.getMessage().contains("JWT expired"));
+        assertFalse(isValid);
     }
+
 
     @Test
     void extractEmail_ShouldReturnCorrectEmail() {
