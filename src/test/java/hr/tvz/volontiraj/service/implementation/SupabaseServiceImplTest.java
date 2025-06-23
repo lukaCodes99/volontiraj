@@ -17,11 +17,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 public class SupabaseServiceImplTest {
@@ -56,6 +54,37 @@ public class SupabaseServiceImplTest {
 
         assertEquals(1, result.size());
         assertTrue(result.getFirst().contains("https://xyz.supabase.co/storage/v1/object/test-bucket/"));
+    }
+
+    @Test
+    void uploadImages_whenFileIsEmpty() throws IOException {
+        MultipartFile emptyFile = mock(MultipartFile.class);
+        when(emptyFile.isEmpty()).thenReturn(true);
+
+        List<String> result = supabaseService.uploadImages(List.of(emptyFile));
+
+        assertTrue(result.isEmpty());
+
+        verify(restTemplate, never()).exchange(anyString(), any(), any(), eq(String.class));
+    }
+
+
+    @Test
+    void uploadImages_shouldThrowRuntimeException() throws IOException {
+        MultipartFile mockFile = mock(MultipartFile.class);
+        when(mockFile.isEmpty()).thenReturn(false);
+        when(mockFile.getOriginalFilename()).thenReturn("test.jpg");
+        when(mockFile.getContentType()).thenReturn("image/jpeg");
+        when(mockFile.getBytes()).thenReturn("dummyData".getBytes());
+
+        ResponseEntity<String> badResponse = new ResponseEntity<>("Error uploading", HttpStatus.BAD_REQUEST);
+
+        when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(String.class)))
+                .thenReturn(badResponse);
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> supabaseService.uploadImages(List.of(mockFile)));
+
+        assertEquals("Upload failed: Error uploading", exception.getMessage());
     }
 
 }
