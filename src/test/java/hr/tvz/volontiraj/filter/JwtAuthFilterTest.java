@@ -128,4 +128,19 @@ class JwtAuthFilterTest {
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         verify(filterChain).doFilter(request, response);
     }
+
+    @Test
+    void doFilterInternal_cookiesWithoutAccessTokenName_skipsAuthentication() throws Exception {
+        when(request.getRequestURI()).thenReturn("/api/something");
+        Cookie cookie = new Cookie("someOtherCookie", "value");
+        when(request.getCookies()).thenReturn(new Cookie[]{cookie});
+        when(jwtProperties.getAccessToken()).thenReturn("accessToken");
+
+        SecurityContextHolder.getContext().setAuthentication(null);
+
+        jwtAuthFilter.doFilterInternal(request, response, filterChain);
+
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        verify(filterChain).doFilter(request, response);
+    }
 }
