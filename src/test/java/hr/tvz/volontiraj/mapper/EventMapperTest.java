@@ -1,3 +1,5 @@
+package hr.tvz.volontiraj.mapper;
+
 import hr.tvz.volontiraj.dto.*;
 import hr.tvz.volontiraj.mapper.EventMapper;
 import hr.tvz.volontiraj.model.*;
@@ -5,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,6 +17,12 @@ class EventMapperTest {
     void mapEventToEventDto_shouldMapAllFields() {
         UserEntity creator = new UserEntity();
         creator.setId(123L);
+
+        UserEntity volunteer1 = new UserEntity();
+        volunteer1.setId(20L);
+
+        UserEntity volunteer2 = new UserEntity();
+        volunteer2.setId(21L);
 
         Event event = new Event();
         event.setId(1L);
@@ -26,8 +35,7 @@ class EventMapperTest {
         event.setStartDateTime(LocalDateTime.of(2025,6,18,10,0));
         event.setUpvote(10);
         event.setCreator(creator);
-        event.setVolunteers(new HashSet<>());
-        event.getVolunteers().add(new UserEntity());
+        event.setVolunteers(Set.of(volunteer1, volunteer2));
 
         EventDto dto = EventMapper.mapEventToEventDto(event);
 
