@@ -45,7 +45,7 @@ public class CookieUtil {
     }
 
 
-    public static void clearCookie(HttpServletResponse response, String cookieName, String path) {
+    public static ResponseCookie clearCookie(HttpServletResponse response, String cookieName, String path) {
         ResponseCookie clearedCookie = ResponseCookie.from(cookieName, "")
                 .httpOnly(true)
                 .secure(true)
@@ -55,6 +55,7 @@ public class CookieUtil {
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, clearedCookie.toString());
+        return clearedCookie;
     }
 
 
