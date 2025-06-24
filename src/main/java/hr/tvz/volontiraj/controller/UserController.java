@@ -1,13 +1,19 @@
 package hr.tvz.volontiraj.controller;
 
+import hr.tvz.volontiraj.dto.EventDto;
 import hr.tvz.volontiraj.dto.UserDto;
 import hr.tvz.volontiraj.model.UserEntity;
 import hr.tvz.volontiraj.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
@@ -53,4 +59,10 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/volunteer-history/{id}")
+    public ResponseEntity<List<EventDto>> getUserVolunteerHistory(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getUserVolunteerHistory(id));
+    }
+
 }

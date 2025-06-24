@@ -1,6 +1,9 @@
 package hr.tvz.volontiraj.service.implementation;
 
+import hr.tvz.volontiraj.dto.EventDto;
 import hr.tvz.volontiraj.dto.UserDto;
+import hr.tvz.volontiraj.model.Event;
+import hr.tvz.volontiraj.model.EventCategory;
 import hr.tvz.volontiraj.model.UserEntity;
 import hr.tvz.volontiraj.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -13,6 +16,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -145,4 +151,22 @@ public class UserServiceImplTest {
 
         SecurityContextHolder.clearContext();
     }
+
+    @Test
+    void getUserVolunteerHistory_ShouldReturnUserVolunteerHistory() {
+        Long id = 1L;
+
+        Event event1 = new Event();
+        event1.setId(4L);
+        event1.setCategory(EventCategory.PETS);
+        List<Event> events = List.of(event1);
+
+        when(userRepository.findAttendingEventsByUserId(id)).thenReturn(events);
+
+        List<EventDto> result = userServiceImpl.getUserVolunteerHistory(id);
+
+        assertNotNull(result);
+        verify(userRepository).findAttendingEventsByUserId(id);
+    }
+
 }

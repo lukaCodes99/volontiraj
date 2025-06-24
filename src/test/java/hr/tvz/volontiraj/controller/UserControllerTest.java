@@ -1,5 +1,6 @@
 package hr.tvz.volontiraj.controller;
 
+import hr.tvz.volontiraj.dto.EventDto;
 import hr.tvz.volontiraj.dto.UserDto;
 import hr.tvz.volontiraj.model.UserEntity;
 import hr.tvz.volontiraj.service.UserService;
@@ -10,6 +11,8 @@ import org.mockito.*;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -100,4 +103,16 @@ class UserControllerTest {
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
+
+    @Test
+    void getUserVolunteerHistory_ShouldReturnEventDto()
+    {
+        when(userService.getUserVolunteerHistory(1L)).thenReturn(List.of(new EventDto()));
+
+        ResponseEntity<List<EventDto>> response = userController.getUserVolunteerHistory(1L);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(List.of(new EventDto()), response.getBody());
+    }
+
 }
