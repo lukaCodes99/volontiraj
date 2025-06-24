@@ -68,6 +68,12 @@ public class RefreshTokenService {
         return token;
     }
 
+    @Transactional
+    public void deleteExpiredTokens() {
+        Instant now = Instant.now();
+        refreshTokenRepository.deleteAllByExpiryDateBefore(now);
+    }
+
     public void deleteByEmail(String email) {
         refreshTokenRepository.deleteByUserInfo_Email(email);
     }

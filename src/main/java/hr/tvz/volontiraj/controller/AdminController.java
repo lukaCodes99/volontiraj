@@ -53,7 +53,6 @@ public class AdminController {
     @GetMapping()
     public ResponseEntity<Object> getAdminPage() {
         try {
-            // Assuming you want to return some admin-specific data
             return ResponseEntity.ok(userService.currentUserEmail());
         } catch (Exception e) {
             return ResponseEntity.status(500).body("An error occurred while accessing the admin page.");

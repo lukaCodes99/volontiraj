@@ -1,5 +1,6 @@
 package hr.tvz.volontiraj.configuration;
 
+import hr.tvz.volontiraj.jobs.ClearExpiredTokensJob;
 import hr.tvz.volontiraj.jobs.NotifyVolunteersJob;
 
 import org.quartz.*;
@@ -22,12 +23,35 @@ public class SchedulerConfig {
         SimpleScheduleBuilder scheduleBuilder =
                 SimpleScheduleBuilder
                         .simpleSchedule()
-                        .withIntervalInSeconds(5) // Adjust the interval as needed
+                        .withIntervalInHours(1)
                         .repeatForever();
 
         return TriggerBuilder.newTrigger()
                 .forJob(notificationJobDetail())
                 .withIdentity("notificationTrigger")
+                .withSchedule(scheduleBuilder)
+                .build();
+    }
+
+    @Bean
+    public JobDetail clearExpiredTokensJobDetail() {
+        return JobBuilder.newJob(ClearExpiredTokensJob.class)
+                .withIdentity("clearExpiredTokensJob")
+                .storeDurably()
+                .build();
+    }
+
+    @Bean
+    public Trigger clearExpiredTokensJobTrigger() {
+        SimpleScheduleBuilder scheduleBuilder =
+                SimpleScheduleBuilder
+                        .simpleSchedule()
+                        .withIntervalInHours(1)
+                        .repeatForever();
+
+        return TriggerBuilder.newTrigger()
+                .forJob(clearExpiredTokensJobDetail())
+                .withIdentity("clearExpiredTokensTrigger")
                 .withSchedule(scheduleBuilder)
                 .build();
     }
