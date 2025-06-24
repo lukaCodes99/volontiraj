@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,4 +50,10 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findTop5ByOrderByUpvoteDesc();
 
     long countByCategory(EventCategory category);
+
+    @Query("SELECT e FROM Event e " +
+            "WHERE e.startDateTime >= :from " +
+            "AND e.startDateTime <= :to")
+    List<Event> findEventsWithinHour(@Param("from") LocalDateTime from,
+                                     @Param("to") LocalDateTime to);
 }

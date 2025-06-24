@@ -3,9 +3,11 @@ package hr.tvz.volontiraj.model;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 import static jakarta.persistence.GenerationType.IDENTITY;

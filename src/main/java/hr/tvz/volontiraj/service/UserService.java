@@ -3,6 +3,8 @@
     import hr.tvz.volontiraj.dto.UserDto;
     import hr.tvz.volontiraj.model.UserEntity;
 
+    import java.util.List;
+
     public interface UserService {
 
 
@@ -17,5 +19,7 @@
         public UserEntity findByEmail(String email);
 
         public String currentUserEmail();
+
+        public List<String> getAllEmailsOfVolunteersForHour();
 
     }

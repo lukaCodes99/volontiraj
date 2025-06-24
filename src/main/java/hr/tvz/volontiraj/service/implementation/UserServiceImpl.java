@@ -10,6 +10,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -56,6 +58,15 @@ public class UserServiceImpl implements UserService {
         //Get the currently authenticated user from the security context
         System.out.println("Current user: " + SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         return SecurityContextHolder.getContext().getAuthentication().getName();
+    }
+
+    @Override
+    public List<String> getAllEmailsOfVolunteersForHour() {
+        LocalDateTime now = LocalDateTime.now();
+        return userRepository.findAllUserEmailsForHour(now, now.plusHours(1))
+                .stream()
+                .map(UserEntity::getEmail)
+                .toList();
     }
 
 
