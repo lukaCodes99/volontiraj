@@ -6,10 +6,7 @@ import hr.tvz.volontiraj.service.AdminService;
 import hr.tvz.volontiraj.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -17,6 +14,7 @@ import java.util.Map;
 @RestController
 @PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/api/admin")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class AdminController {
 
     private final UserService userService;
