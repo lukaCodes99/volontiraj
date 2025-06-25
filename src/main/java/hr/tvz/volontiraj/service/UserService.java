@@ -7,6 +7,8 @@
 
     import java.util.List;
 
+    import java.util.List;
+
     public interface UserService {
 
 
@@ -23,5 +25,8 @@
         public String currentUserEmail();
 
         public List<EventDto> getUserVolunteerHistory(Long id);
+
+        public List<String> getAllEmailsOfVolunteersForHour();
+
 
     }

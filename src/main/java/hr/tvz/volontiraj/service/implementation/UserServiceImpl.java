@@ -15,6 +15,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+
+import java.time.LocalDateTime;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -66,9 +69,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+
     public List<EventDto> getUserVolunteerHistory(Long id) {
         List<Event> events = userRepository.findAttendingEventsByUserId(id);
         return events.stream().map(EventMapper::mapEventToEventDto).toList();
+
+    public List<String> getAllEmailsOfVolunteersForHour() {
+        LocalDateTime now = LocalDateTime.now();
+        return userRepository.findAllUserEmailsForHour(now, now.plusHours(1))
+                .stream()
+                .map(UserEntity::getEmail)
+                .toList();
+
     }
 
 

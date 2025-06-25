@@ -20,8 +20,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -166,6 +169,19 @@ public class EventServiceImpl implements EventService {
             eventRepository.save(existingEvent);
         } else {
             throw new EntityNotFoundException("Event with id: " + eventId + " not found!");
+        }
+    }
+
+    @Override
+    public List<Event> findEventsWithinHour() {
+        LocalDateTime now = LocalDateTime.now();
+        System.out.println("in service");
+        try {
+            System.out.println("Finding events within the next hour from: " + now);
+            return eventRepository.findEventsWithinHour(now, now.plusHours(1));
+        }catch (Exception e) {
+            System.out.println("Error in findEventsWithinHour: " + e);
+            throw new RuntimeException("Error fetching events within the hour: " + e);
         }
     }
 

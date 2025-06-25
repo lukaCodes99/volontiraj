@@ -5,6 +5,7 @@ import hr.tvz.volontiraj.dto.HomePageDto;
 import hr.tvz.volontiraj.dto.NewEventDto;
 import hr.tvz.volontiraj.dto.SearchEventDto;
 import hr.tvz.volontiraj.filterParams.EventFilterParams;
+import hr.tvz.volontiraj.model.Event;
 import org.springframework.data.domain.Pageable;
 
 import java.io.IOException;
@@ -19,6 +20,6 @@ public interface EventService {
     public void deleteById(Long id);
     public void upvoteEvent(Long eventId);
     public void addVolunteer(Long eventId);
-
+    public List<Event> findEventsWithinHour();
     Map<String, List<HomePageDto>> getEventsForHomePage();
 }

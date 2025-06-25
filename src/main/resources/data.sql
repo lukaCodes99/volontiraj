@@ -11,7 +11,7 @@ INSERT INTO USER_ENTITY (profilePicturePath, username, name, surname, password, 
 INSERT INTO EVENT (category, title, description, location, address, startDateTime, upvote, creatorId) VALUES
              ('PETS', 'Pet Shelter Cleanup', 'Help us clean and organize the local animal shelter', 'ZAGREB', 'City Animal Shelter', '2023-11-15 09:00:00', 5, 1),
              ('PETS', 'Dog Walking Afternoon', 'Walk dogs from the shelter who need exercise','SPLIT', 'Paw Park', '2023-11-20 14:00:00', 12, 1),
-             ('PETS', 'Pet Food Donation Drive', 'Collecting pet food for strays and shelter animals', 'OSIJEK','Town Square', '2023-11-25 10:00:00', 8, 2);
+             ('PETS', 'Pet Food Donation Drive', 'Collecting pet food for strays and shelter animals', 'OSIJEK','Town Square', '2025-06-24 14:00:00', 8, 2);
 
 -- PEOPLE category events (3)
 INSERT INTO EVENT (category, title, description, location, address, startDateTime, upvote, creatorId) VALUES
@@ -30,3 +30,9 @@ INSERT INTO EVENT (category, title, description, location, address, startDateTim
              ('OTHER', 'Book Drive for Libraries', 'Collect books to donate to schools and public libraries','ZAGREB', 'Main Library', '2023-11-17 10:00:00', 9, 3),
              ('OTHER', 'Tech Support for Seniors', 'Help senior citizens with technology questions and issues', 'OSIJEK','Senior Center', '2023-11-21 14:00:00', 11, 2),
              ('OTHER', 'Charity Fun Run', 'Participate in a 5K run to raise money for local charities', 'ZAGREB','Riverfront Park', '2023-11-28 08:00:00', 25, 4);
+
+INSERT INTO "ATTENDING EVENTS" (userEntityId, eventId) VALUES
+               (1, 3),
+               (2, 3),
+               (3, 3),
+               (4, 3);
