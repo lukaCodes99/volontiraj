@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -63,21 +64,24 @@ public class AuthControllerTest {
 
     @Test
     void testAuthenticateAndGetToken_success() throws Exception {
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-                .thenReturn(mock(Authentication.class));
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)).isAuthenticated()).thenReturn(true);
-        Authentication authenticationMock = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken("user@example.com", "password"));
+
+        Authentication authenticationMock = mock(Authentication.class);
+
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authenticationMock);
+        when(authenticationMock.isAuthenticated()).thenReturn(true);
         when(authenticationMock.getPrincipal()).thenReturn(mock(UserDetails.class));
         when(((UserDetails)authenticationMock.getPrincipal()).getUsername()).thenReturn("user@example.com");
+
 
         RefreshToken refreshTokenMock = new RefreshToken();
         refreshTokenMock.setId(123L);
         when(refreshTokenService.createRefreshToken("user@example.com")).thenReturn(refreshTokenMock);
-
         when(jwtService.generateToken("user@example.com")).thenReturn("access-token");
+
 
         UserEntity userEntity = new UserEntity();
         userEntity.setEmail("user@example.com");
+
         when(userService.findByEmail("user@example.com")).thenReturn(userEntity);
 
         when(jwtProperties.getRefreshTokenId()).thenReturn("refreshTokenId");
@@ -103,7 +107,7 @@ public class AuthControllerTest {
     @Test
     void testAuthenticateAndGetToken_failAuthentication() throws Exception {
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-                .thenThrow(new RuntimeException("Bad credentials"));
+                .thenThrow(new BadCredentialsException("Bad credentials"));
 
         String jsonRequest = "{\"email\":\"user@example.com\",\"password\":\"wrongpassword\"}";
 
@@ -128,6 +132,8 @@ public class AuthControllerTest {
 
         UserEntity userEntity = new UserEntity();
         userEntity.setEmail("user@example.com");
+
+        refreshTokenMock.setUserInfo(userEntity);
 
         when(refreshTokenService.findByTokenId(456L)).thenReturn(refreshTokenMock);
         when(userService.findByEmail(any())).thenReturn(userEntity);
@@ -173,6 +179,8 @@ public class AuthControllerTest {
 
         UserEntity userEntity = new UserEntity();
         userEntity.setEmail("currentuser@example.com");
+
+        refreshTokenMock.setUserInfo(userEntity);
 
         when(refreshTokenService.findByTokenId(789L)).thenReturn(refreshTokenMock);
         when(userService.findByEmail(any())).thenReturn(userEntity);

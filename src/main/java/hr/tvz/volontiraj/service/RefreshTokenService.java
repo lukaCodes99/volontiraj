@@ -48,7 +48,6 @@ public class RefreshTokenService {
     }
 
     public RefreshToken findByTokenId(Long id) {
-        log.info(refreshTokenRepository.findAll().toString());
         Optional<RefreshToken> optionalToken = refreshTokenRepository.findById(id);
         if (optionalToken.isPresent()) {
             return optionalToken.get();
