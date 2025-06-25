@@ -166,9 +166,9 @@ public class EventServiceImpl implements EventService {
         Optional<Event> event = eventRepository.findById(eventId);
         if (event.isPresent()) {
             //UserEntity mockUser = new UserEntity(1L); //Ovo cemo zamijeniti sa CURRENT USER--metoda ce biti implementirana kasnije kod security!
-            UserEntity mockUser = userService.getCurrentUser();
+            UserEntity user = userService.getCurrentUser();
             Event existingEvent = event.get();
-            existingEvent.getVolunteers().add(mockUser);
+            existingEvent.getVolunteers().add(user);
             eventRepository.save(existingEvent);
         } else {
             throw new EntityNotFoundException("Event with id: " + eventId + " not found!");
