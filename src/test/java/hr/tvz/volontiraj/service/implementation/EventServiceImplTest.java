@@ -31,10 +31,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -402,6 +399,31 @@ public class EventServiceImplTest {
         assertEquals("Event with id: 404 not found!", exception.getMessage());
         verify(eventRepository, never()).save(any());
     }
+
+    @Test
+    void findEventsWithinHour_ShouldFindEventsWithinHour() {
+        Event event1 = new Event();
+        Event event2 = new Event();
+
+        List<Event> events = List.of(event1, event2);
+
+        when(eventRepository.findEventsWithinHour(any(), any())).thenReturn(events);
+
+        List<Event> result = eventServiceImpl.findEventsWithinHour();
+
+        assertEquals(events, result);
+        verify(eventRepository).findEventsWithinHour(any(), any());
+    }
+
+    @Test
+    void findEventsWithinHour_ShouldThrowException_whenEventNotFound() {
+        when(eventRepository.findEventsWithinHour(any(), any())).thenThrow(RuntimeException.class);
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> eventServiceImpl.findEventsWithinHour());
+
+        assertTrue(exception.getMessage().contains("Error fetching events within the hour:"));
+    }
+
 
     @Test
     void getEventsForHomePage_ShouldReturnEventsForHomePage() {
