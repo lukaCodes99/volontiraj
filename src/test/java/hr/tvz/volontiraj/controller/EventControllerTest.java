@@ -45,15 +45,17 @@ class EventControllerTest {
     }
 
     @Test
-    void getAllEvents_WhenException_ShouldReturnInternalServerError() {
+    void getAllEvents_WhenException_ShouldThrowRuntimeException() {
         when(eventService.findAllPagedAndFiltered(any(Pageable.class), any(EventFilterParams.class)))
                 .thenThrow(new RuntimeException("DB error"));
 
-        ResponseEntity<List<SearchEventDto>> response = eventController.getAllEvents(0, 10, "startDateTime", true, new EventFilterParams());
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            eventController.getAllEvents(0, 10, "startDateTime", true, new EventFilterParams());
+        });
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertNull(response.getBody());
+        assertEquals("DB error", exception.getMessage());
     }
+
 
     @Test
     void getEventById_ShouldReturnEvent() {
