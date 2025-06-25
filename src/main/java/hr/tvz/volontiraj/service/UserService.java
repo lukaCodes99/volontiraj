@@ -1,7 +1,11 @@
     package hr.tvz.volontiraj.service;
 
+    import hr.tvz.volontiraj.dto.EventDto;
     import hr.tvz.volontiraj.dto.UserDto;
     import hr.tvz.volontiraj.model.UserEntity;
+    import org.springframework.data.domain.Pageable;
+
+    import java.util.List;
 
     import java.util.List;
 
@@ -20,6 +24,9 @@
 
         public String currentUserEmail();
 
+        public List<EventDto> getUserVolunteerHistory(Long id);
+
         public List<String> getAllEmailsOfVolunteersForHour();
+
 
     }
