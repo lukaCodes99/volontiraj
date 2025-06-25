@@ -69,11 +69,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-
     public List<EventDto> getUserVolunteerHistory(Long id) {
         List<Event> events = userRepository.findAttendingEventsByUserId(id);
         return events.stream().map(EventMapper::mapEventToEventDto).toList();
+    }
 
+    @Override
     public List<String> getAllEmailsOfVolunteersForHour() {
         LocalDateTime now = LocalDateTime.now();
         return userRepository.findAllUserEmailsForHour(now, now.plusHours(1))
