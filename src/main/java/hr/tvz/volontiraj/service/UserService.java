@@ -29,4 +29,5 @@
         public List<String> getAllEmailsOfVolunteersForHour();
 
 
+        public UserEntity getCurrentUser();
     }

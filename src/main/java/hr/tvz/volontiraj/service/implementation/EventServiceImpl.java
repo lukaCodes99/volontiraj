@@ -14,6 +14,7 @@ import hr.tvz.volontiraj.repository.UserRepository;
 import hr.tvz.volontiraj.service.EventImageService;
 import hr.tvz.volontiraj.service.EventService;
 import hr.tvz.volontiraj.service.SupabaseService;
+import hr.tvz.volontiraj.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +38,7 @@ public class EventServiceImpl implements EventService {
     private final EventImageService eventImageService;
     private final SupabaseService supabaseService;
     private final UserRepository userRepository;
+    private final UserService userService;
 
     @Override
     public List<SearchEventDto> findAllPagedAndFiltered(Pageable pageable, EventFilterParams eventFilterParams) {
@@ -163,7 +165,8 @@ public class EventServiceImpl implements EventService {
     public void addVolunteer(Long eventId) {
         Optional<Event> event = eventRepository.findById(eventId);
         if (event.isPresent()) {
-            UserEntity mockUser = new UserEntity(1L); //Ovo cemo zamijeniti sa CURRENT USER--metoda ce biti implementirana kasnije kod security!
+            //UserEntity mockUser = new UserEntity(1L); //Ovo cemo zamijeniti sa CURRENT USER--metoda ce biti implementirana kasnije kod security!
+            UserEntity mockUser = userService.getCurrentUser();
             Event existingEvent = event.get();
             existingEvent.getVolunteers().add(mockUser);
             eventRepository.save(existingEvent);
