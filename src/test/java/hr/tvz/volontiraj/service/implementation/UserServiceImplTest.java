@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -167,6 +168,22 @@ public class UserServiceImplTest {
 
         assertNotNull(result);
         verify(userRepository).findAttendingEventsByUserId(id);
+    }
+
+    @Test
+    void getCurrentUser_ShouldReturnCurrentUser() {
+        UserServiceImpl spyService = Mockito.spy(userServiceImpl);
+        String currentUserEmail = "currentUser@example.com";
+
+        UserEntity user = new UserEntity();
+        user.setId(1L);
+
+        doReturn(currentUserEmail).when(spyService).currentUserEmail();
+        when(userRepository.findByEmail(currentUserEmail)).thenReturn(user);
+
+        UserEntity result = spyService.getCurrentUser();
+
+        assertEquals(result.getId(), user.getId());
     }
 
 }
