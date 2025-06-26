@@ -5,27 +5,24 @@ import hr.tvz.volontiraj.dto.HomePageDto;
 import hr.tvz.volontiraj.dto.NewEventDto;
 import hr.tvz.volontiraj.dto.SearchEventDto;
 import hr.tvz.volontiraj.filterParams.EventFilterParams;
-import hr.tvz.volontiraj.model.Event;
 import hr.tvz.volontiraj.service.EventService;
+import hr.tvz.volontiraj.util.PageableFactory;
+import hr.tvz.volontiraj.util.SortStrategyFactory;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-
 
 @RestController
 @RequestMapping("/api/event")
@@ -44,17 +41,10 @@ public class EventController {
             @RequestParam(defaultValue = "true") boolean ascending,
             @ModelAttribute EventFilterParams filterParams) {
 
-        Sort sort = Sort.by(ascending ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
-        Pageable pageable = PageRequest.of(page, size, sort);
+        Pageable pageable = PageableFactory.create(page, size, SortStrategyFactory.getSort(sortBy, ascending));
 
-        try {
-            List<SearchEventDto> events = eventService.findAllPagedAndFiltered(pageable, filterParams);
-            return ResponseEntity.ok(events);
-        } catch (Exception e) {
-            //System.out.println("Error fetching events: " + e.getMessage());
-            logger.error("Error fetching events: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+        List<SearchEventDto> events = eventService.findAllPagedAndFiltered(pageable, filterParams);
+        return ResponseEntity.ok(events);
     }
 
     @GetMapping("/{id}")
@@ -74,7 +64,6 @@ public class EventController {
             Map<String, List<HomePageDto>> events = eventService.getEventsForHomePage();
             return ResponseEntity.ok(events);
         } catch (Exception e) {
-            //System.out.println("Error fetching home page events: " + e.getMessage());
             logger.error("Error fetching home page events: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
@@ -91,7 +80,6 @@ public class EventController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdEvent);
     }
 
-
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
@@ -101,8 +89,7 @@ public class EventController {
         } catch (EntityNotFoundException e) {
             logger.error("Event not found for deletion with id: {}", id, e);
             return ResponseEntity.notFound().build();
-        }
-        catch (AccessDeniedException e) {
+        } catch (AccessDeniedException e) {
             logger.error("Access denied for deletion of event with id: {}", id, e);
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -112,17 +99,14 @@ public class EventController {
     @PutMapping("/{id}")
     public ResponseEntity<EventDto> updateEvent(@PathVariable Long id, @ModelAttribute NewEventDto updateEventDto) {
         try {
-            EventDto createdEvent = eventService.update(id, updateEventDto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdEvent);
+            EventDto updatedEvent = eventService.update(id, updateEventDto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(updatedEvent);
         } catch (EntityNotFoundException | IOException e) {
             logger.error("Error updating event with id: {}", id, e);
             return ResponseEntity.notFound().build();
-        }
-        catch (AccessDeniedException e) {
+        } catch (AccessDeniedException e) {
             logger.error("Access denied for updating event with id: {}", id, e);
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
-
-
 }

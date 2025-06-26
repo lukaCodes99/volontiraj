@@ -24,12 +24,12 @@ public class UserMapper {
 
     public static UserEntity mapUserDtoToUser(UserDto dto) {
         UserEntity user = new UserEntity();
-        user.setId(user.getId());
-        user.setUsername(user.getUsername());
-        user.setName(user.getName());
-        user.setSurname(user.getSurname());
-        user.setEmail(user.getEmail());
-        user.setBio(user.getBio());
+        user.setId(dto.getId());
+        user.setUsername(dto.getUsername());
+        user.setName(dto.getName());
+        user.setSurname(dto.getSurname());
+        user.setEmail(dto.getEmail());
+        user.setBio(dto.getBio());
 
         return user;
     }
