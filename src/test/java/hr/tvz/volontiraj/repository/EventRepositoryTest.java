@@ -5,6 +5,7 @@ import hr.tvz.volontiraj.model.EventCategory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
@@ -21,10 +22,10 @@ public class EventRepositoryTest {
     @Test
     void testFindFilteredAndPaged_ByTitleAndCategory() {
         Pageable pageable = PageRequest.of(0, 10);
-        List<Event> results = eventRepository.findFilteredAndPaged(
+        Page<Event> results = eventRepository.findFilteredAndPaged(
                 EventCategory.PETS, "Pet", null, null, null, null, null, pageable);
 
-        assertFalse(results.isEmpty());
+        assertFalse(results.getContent().isEmpty());
     }
 
     @Test

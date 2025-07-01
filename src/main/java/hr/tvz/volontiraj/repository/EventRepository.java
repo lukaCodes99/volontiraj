@@ -4,6 +4,7 @@ import hr.tvz.volontiraj.filterParams.EventFilterParams;
 import hr.tvz.volontiraj.model.Event;
 import hr.tvz.volontiraj.model.EventCategory;
 import org.springframework.data.domain.ManagedTypes;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -25,7 +26,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "AND (:startDateTimeFrom IS NULL OR e.startDateTime >= :startDateTimeFrom) " +
             "AND (:startDateTimeTo IS NULL OR e.startDateTime <= :startDateTimeTo) " +
             "AND (:creatorId IS NULL OR e.creator.id = :creatorId)")
-    List<Event> findFilteredAndPaged(
+    Page<Event> findFilteredAndPaged(
             @Param("categoryParam") EventCategory category,
             @Param("title") String title,
             @Param("description") String description,

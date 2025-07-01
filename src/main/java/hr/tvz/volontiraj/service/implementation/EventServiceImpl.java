@@ -17,6 +17,7 @@ import hr.tvz.volontiraj.service.SupabaseService;
 import hr.tvz.volontiraj.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -41,9 +42,9 @@ public class EventServiceImpl implements EventService {
     private final UserService userService;
 
     @Override
-    public List<SearchEventDto> findAllPagedAndFiltered(Pageable pageable, EventFilterParams eventFilterParams) {
+    public Map<Long, List<SearchEventDto>> findAllPagedAndFiltered(Pageable pageable, EventFilterParams eventFilterParams) {
         EventCategory eventCategory = eventFilterParams.getCategory() == null ? null : EventCategory.valueOf(eventFilterParams.getCategory());
-        List<Event> events = eventRepository
+        Page<Event> events = eventRepository
                 .findFilteredAndPaged(
                         eventCategory,
                         eventFilterParams.getTitle(),
@@ -55,9 +56,11 @@ public class EventServiceImpl implements EventService {
                         pageable
                 );
 
-        return events.stream()
+        Map<Long, List<SearchEventDto>> map = new HashMap<>();
+        map.put(events.getTotalElements(), events.getContent().stream()
                 .map(EventMapper::mapEventToSearchEventDto)
-                .toList();
+                .toList());
+        return map;
     }
 
     @Override
@@ -102,7 +105,7 @@ public class EventServiceImpl implements EventService {
         Optional<Event> existingEvent = eventRepository.findById(id);
         if (existingEvent.isPresent()) {
             String creatorEmail = existingEvent.get().getCreator().getEmail();
-            if(!creatorEmail.equals(SecurityContextHolder.getContext().getAuthentication().getName())) {
+            if (!creatorEmail.equals(SecurityContextHolder.getContext().getAuthentication().getName())) {
                 throw new AccessDeniedException("You do not have permission to delete this event.");
             }
             Event eventToUpdate = existingEvent.get();
@@ -141,7 +144,7 @@ public class EventServiceImpl implements EventService {
         Optional<Event> eventToDelete = eventRepository.findById(id);
         if (eventToDelete.isPresent()) {
             String creatorEmail = eventToDelete.get().getCreator().getEmail();
-            if(creatorEmail.equals(SecurityContextHolder.getContext().getAuthentication().getName())) {
+            if (creatorEmail.equals(SecurityContextHolder.getContext().getAuthentication().getName())) {
                 eventRepository.deleteById(id);
             } else {
                 throw new AccessDeniedException("You do not have permission to delete this event.");
@@ -182,7 +185,7 @@ public class EventServiceImpl implements EventService {
         try {
             System.out.println("Finding events within the next hour from: " + now);
             return eventRepository.findEventsWithinHour(now, now.plusHours(1));
-        }catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("Error in findEventsWithinHour: " + e);
             throw new RuntimeException("Error fetching events within the hour: " + e);
         }

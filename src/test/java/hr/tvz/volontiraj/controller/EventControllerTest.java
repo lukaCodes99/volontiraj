@@ -34,11 +34,12 @@ class EventControllerTest {
 
     @Test
     void getAllEvents_ShouldReturnEventsList() {
-        List<SearchEventDto> mockEvents = List.of(new SearchEventDto(), new SearchEventDto());
+        HashMap<Long, List<SearchEventDto>> mockEvents = new HashMap<>();
+        mockEvents.put(2L, List.of(new SearchEventDto(), new SearchEventDto()));
         when(eventService.findAllPagedAndFiltered(any(Pageable.class), any(EventFilterParams.class)))
                 .thenReturn(mockEvents);
 
-        ResponseEntity<List<SearchEventDto>> response = eventController.getAllEvents(0, 10, "startDateTime", true, new EventFilterParams());
+        ResponseEntity<Map<Long, List<SearchEventDto>>> response = eventController.getAllEvents(0, 10, "startDateTime", true, new EventFilterParams());
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(mockEvents, response.getBody());
