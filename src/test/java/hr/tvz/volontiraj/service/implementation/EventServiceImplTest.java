@@ -21,6 +21,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
@@ -69,9 +71,9 @@ public class EventServiceImplTest {
         filterParams.setStartDateTimeTo(LocalDateTime.now().plusDays(1));
         filterParams.setCreatorId(1L);
 
-        hr.tvz.volontiraj.model.Event event1 = new hr.tvz.volontiraj.model.Event();
+        Event event1 = new Event();
         event1.setId(1L);
-        List<hr.tvz.volontiraj.model.Event> mockEventList = List.of(event1);
+        Page<Event> mockEventList =  new PageImpl<>(List.of(event1));
 
         when(eventRepository.findFilteredAndPaged(
                 EventCategory.PEOPLE,
@@ -89,10 +91,13 @@ public class EventServiceImplTest {
 
             mocked.when(() -> EventMapper.mapEventToSearchEventDto(event1)).thenReturn(dto1);
 
-            List<SearchEventDto> result = eventServiceImpl.findAllPagedAndFiltered(pageable, filterParams);
+            Map<Long,List<SearchEventDto>> result = eventServiceImpl.findAllPagedAndFiltered(pageable, filterParams);
 
-            assertEquals(mockEventList.size(), result.size());
-            assertEquals(dto1, result.getFirst());
+            assertFalse(result.isEmpty());
+            assertEquals(mockEventList.getSize(), result.size());
+
+            Optional<List<SearchEventDto>> first = result.values().stream().findFirst();
+            first.ifPresent(searchEventDto -> assertEquals(dto1, searchEventDto.getFirst()));
         }
     }
 

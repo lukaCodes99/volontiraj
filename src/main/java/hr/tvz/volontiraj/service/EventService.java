@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface EventService {
-    public List<SearchEventDto> findAllPagedAndFiltered(Pageable pageable, EventFilterParams eventFilterParams);
+    public Map<Long, List<SearchEventDto>> findAllPagedAndFiltered(Pageable pageable, EventFilterParams eventFilterParams);
     public EventDto findById(Long id);
     public EventDto save(NewEventDto newEventDto) throws IOException;
     public EventDto update(Long id, NewEventDto eventDto) throws IOException;

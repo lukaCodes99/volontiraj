@@ -34,7 +34,7 @@ public class EventController {
     private static final Logger logger = LoggerFactory.getLogger(EventController.class);
 
     @GetMapping
-    public ResponseEntity<List<SearchEventDto>> getAllEvents(
+    public ResponseEntity<Map<Long, List<SearchEventDto>>> getAllEvents(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "startDateTime") String sortBy,
@@ -43,7 +43,7 @@ public class EventController {
 
         Pageable pageable = PageableFactory.create(page, size, SortStrategyFactory.getSort(sortBy, ascending));
 
-        List<SearchEventDto> events = eventService.findAllPagedAndFiltered(pageable, filterParams);
+        Map<Long, List<SearchEventDto>> events = eventService.findAllPagedAndFiltered(pageable, filterParams);
         return ResponseEntity.ok(events);
     }
 
