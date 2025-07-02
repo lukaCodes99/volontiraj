@@ -45,6 +45,7 @@ public class SecurityConfiguration {
                                 .requestMatchers("/auth/api/v1/login").anonymous()
                                 .requestMatchers("/auth/api/v1/login", "/auth/api/v1/refreshToken", "/auth/api/v1/logout", "/auth/api/v1/me").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/event/**").permitAll()
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

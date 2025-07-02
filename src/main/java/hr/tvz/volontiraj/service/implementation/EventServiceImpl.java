@@ -139,12 +139,15 @@ public class EventServiceImpl implements EventService {
             throw new EntityNotFoundException("Event with id: " + id + " not found!");
     }
 
+
+    @Transactional
     @Override
     public void deleteById(Long id) {
         Optional<Event> eventToDelete = eventRepository.findById(id);
         if (eventToDelete.isPresent()) {
             String creatorEmail = eventToDelete.get().getCreator().getEmail();
             if (creatorEmail.equals(SecurityContextHolder.getContext().getAuthentication().getName())) {
+                eventImageRepository.deleteAllByEventId(id);
                 eventRepository.deleteById(id);
             } else {
                 throw new AccessDeniedException("You do not have permission to delete this event.");
