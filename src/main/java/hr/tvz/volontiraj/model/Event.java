@@ -27,6 +27,8 @@ public class Event {
     private EventCategory category;
     private String title;
     private String description;
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String details;
     private String location;
     private String address;
