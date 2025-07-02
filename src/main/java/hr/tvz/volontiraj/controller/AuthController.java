@@ -79,7 +79,9 @@ public class AuthController {
 
         RefreshToken refreshToken = refreshTokenService.findByTokenId(Long.valueOf(refreshTokenId));
 
-        if (refreshToken.getExpiryDate().isBefore(Instant.now())) {
+        if (refreshToken == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Refresh token does not exist");
+        } else if (refreshToken.getExpiryDate().isBefore(Instant.now())) {
             refreshTokenService.deleteRefreshToken(refreshToken); // optional cleanup
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Refresh token expired");
         }
@@ -104,7 +106,9 @@ public class AuthController {
 
         RefreshToken refreshToken = refreshTokenService.findByTokenId(Long.valueOf(refreshTokenId));
 
-        if (refreshToken.getExpiryDate().isBefore(Instant.now())) {
+        if (refreshToken == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Refresh token does not exist");
+        } else if (refreshToken.getExpiryDate().isBefore(Instant.now())) {
             refreshTokenService.deleteRefreshToken(refreshToken); // optional cleanup
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Refresh token expired");
         }

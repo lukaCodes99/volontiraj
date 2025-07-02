@@ -11,6 +11,7 @@ import hr.tvz.volontiraj.model.UserEntity;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -32,8 +33,9 @@ public class EventMapper {
         if (event.getCreator() != null) {
             eventDto.setCreatorId(event.getCreator().getId());
         }
-        if(event.getVolunteers() != null) {
-            eventDto.setVolunteerCount(event.getVolunteers().size());
+        if(event.getVolunteers() != null && !event.getVolunteers().isEmpty()) {
+            int volunteerCount = new ArrayList<>(event.getVolunteers()).size();
+            eventDto.setVolunteerCount(volunteerCount);
         }
 
         return eventDto;

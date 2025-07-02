@@ -22,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -74,6 +75,7 @@ public class EventServiceImpl implements EventService {
         }
     }
 
+    @Transactional(rollbackFor = IOException.class)
     @Override
     public EventDto save(NewEventDto newEventDto) throws IOException {
         Event newEvent = EventMapper.mapNewEventDtoToEvent(newEventDto);
