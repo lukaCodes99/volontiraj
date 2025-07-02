@@ -23,34 +23,35 @@ public class SupabaseServiceImpl implements SupabaseService {
     private String supabaseBucket;
 
     private final RestTemplate restTemplate;
+
     public SupabaseServiceImpl(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
     @Override
     public List<String> uploadImages(List<MultipartFile> files) throws IOException {
-        List<String> uploadedPaths = new ArrayList<>();
-       // RestTemplate restTemplate = new RestTemplate();
+        try {
+            List<String> uploadedPaths = new ArrayList<>();
+            for (MultipartFile file : files) {
+                if (!file.isEmpty()) {
+                    String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+                    String uploadUrl = supabaseUrl + "/storage/v1/object/" + supabaseBucket + "/" + fileName;
 
-        for (MultipartFile file : files) {
-            if(!file.isEmpty()) {
-                String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-                String uploadUrl = supabaseUrl + "/storage/v1/object/" + supabaseBucket + "/" + fileName;
+                    HttpHeaders headers = new HttpHeaders();
+                    headers.setContentType(MediaType.parseMediaType(Objects.requireNonNull(file.getContentType())));
+                    headers.setBearerAuth(supabaseKey);
 
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.parseMediaType(Objects.requireNonNull(file.getContentType())));
-                headers.setBearerAuth(supabaseKey);
+                    HttpEntity<byte[]> requestEntity = new HttpEntity<>(file.getBytes(), headers);
+                    ResponseEntity<String> response = restTemplate.exchange(uploadUrl, HttpMethod.PUT, requestEntity, String.class);
 
-                HttpEntity<byte[]> requestEntity = new HttpEntity<>(file.getBytes(), headers);
-                ResponseEntity<String> response = restTemplate.exchange(uploadUrl, HttpMethod.PUT, requestEntity, String.class);
-
-                if (response.getStatusCode().is2xxSuccessful()) {
-                    uploadedPaths.add(uploadUrl);
-                } else {
-                    throw new RuntimeException("Upload failed: " + response.getBody());
+                    if (response.getStatusCode().is2xxSuccessful()) {
+                        uploadedPaths.add(uploadUrl);
+                    }
                 }
             }
+            return uploadedPaths;
+        } catch (Exception e) {
+            throw new IOException("Upload failed: " + e.getMessage());
         }
-        return uploadedPaths;
     }
 }
