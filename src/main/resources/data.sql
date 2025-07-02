@@ -36,3 +36,23 @@ INSERT INTO "ATTENDING EVENTS" (userEntityId, eventId) VALUES
                (2, 3),
                (3, 3),
                (4, 3);
+
+INSERT INTO  EVENT_IMAGE (imagePath, eventId) VALUES
+                ('https://picsum.photos/300/300',1),
+                ('https://picsum.photos/300/300',1),
+                ('https://picsum.photos/300/300',1),
+                ('https://picsum.photos/300/300',2),
+                ('https://picsum.photos/300/300',2),
+                ('https://picsum.photos/300/300',2),
+                ('https://picsum.photos/300/300',3),
+                ('https://picsum.photos/300/300',3),
+                ('https://picsum.photos/300/300',3),
+                ('https://picsum.photos/300/300',4),
+                ('https://picsum.photos/300/300',4),
+                ('https://picsum.photos/300/300',4),
+                ('https://picsum.photos/300/300',5),
+                ('https://picsum.photos/300/300',5),
+                ('https://picsum.photos/300/300',5),
+                ('https://picsum.photos/300/300',6),
+                ('https://picsum.photos/300/300',6),
+                ('https://picsum.photos/300/300',6);
