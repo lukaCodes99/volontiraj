@@ -11,7 +11,7 @@ import hr.tvz.volontiraj.model.UserEntity;
 import hr.tvz.volontiraj.repository.EventImageRepository;
 import hr.tvz.volontiraj.repository.EventRepository;
 import hr.tvz.volontiraj.repository.UserRepository;
-import hr.tvz.volontiraj.service.EventImageService;
+import hr.tvz.volontiraj.service.EventImageReadService;
 import hr.tvz.volontiraj.service.SupabaseService;
 import hr.tvz.volontiraj.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -47,7 +47,7 @@ public class EventServiceImplTest {
     private EventImageRepository eventImageRepository;
 
     @Mock
-    private EventImageService eventImageService;
+    private EventImageReadService eventImageReadService;
     @Mock
     private SupabaseService supabaseService;
     @Mock
@@ -117,7 +117,7 @@ public class EventServiceImplTest {
         List<EventImage> images = List.of(image);
 
         when(eventRepository.findById(id)).thenReturn(Optional.of(event));
-        when(eventImageService.findAllByEventId(id)).thenReturn(images);
+        when(eventImageReadService.findAllByEventId(id)).thenReturn(images);
 
         try (
                 MockedStatic<EventMapper> eventMapperMock = mockStatic(EventMapper.class);

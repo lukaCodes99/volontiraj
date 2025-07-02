@@ -1,9 +1,9 @@
 package hr.tvz.volontiraj.service.implementation;
 
-import hr.tvz.volontiraj.model.Event;
 import hr.tvz.volontiraj.model.EventImage;
 import hr.tvz.volontiraj.repository.EventImageRepository;
-import hr.tvz.volontiraj.service.EventImageService;
+import hr.tvz.volontiraj.service.EventImageReadService;
+import hr.tvz.volontiraj.service.EventImageWriteService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class EventImageServiceImpl implements EventImageService {
+public class EventImageServiceImpl implements EventImageReadService, EventImageWriteService {
 
     private final EventImageRepository eventImageRepository;
 

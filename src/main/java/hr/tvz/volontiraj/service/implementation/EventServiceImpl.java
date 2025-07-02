@@ -11,7 +11,7 @@ import hr.tvz.volontiraj.model.UserEntity;
 import hr.tvz.volontiraj.repository.EventImageRepository;
 import hr.tvz.volontiraj.repository.EventRepository;
 import hr.tvz.volontiraj.repository.UserRepository;
-import hr.tvz.volontiraj.service.EventImageService;
+import hr.tvz.volontiraj.service.EventImageReadService;
 import hr.tvz.volontiraj.service.EventService;
 import hr.tvz.volontiraj.service.SupabaseService;
 import hr.tvz.volontiraj.service.UserService;
@@ -22,8 +22,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -36,7 +34,7 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final EventImageRepository eventImageRepository;
 
-    private final EventImageService eventImageService;
+    private final EventImageReadService eventImageReadService;
     private final SupabaseService supabaseService;
     private final UserRepository userRepository;
     private final UserService userService;
@@ -68,7 +66,7 @@ public class EventServiceImpl implements EventService {
         Optional<Event> event = eventRepository.findById(id);
         if (event.isPresent()) {
             EventDto eventDto = EventMapper.mapEventToEventDto(event.get());
-            List<EventImageDto> eventImages = eventImageService.findAllByEventId(eventDto.getId()).stream().map(EventImageMapper::mapEventImageToEventImageDto).toList();
+            List<EventImageDto> eventImages = eventImageReadService.findAllByEventId(eventDto.getId()).stream().map(EventImageMapper::mapEventImageToEventImageDto).toList();
             eventDto.setImages(eventImages);
             return eventDto;
         } else {
