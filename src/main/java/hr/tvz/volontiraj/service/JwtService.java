@@ -1,6 +1,5 @@
 package hr.tvz.volontiraj.service;
 
-
 import hr.tvz.volontiraj.model.RefreshToken;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -19,20 +18,34 @@ import java.util.function.Function;
 
 @Component
 @AllArgsConstructor
-public class JwtService {
-    private RefreshTokenService refreshTokenService;
+public class JwtService implements TokenService {
+
+    private final RefreshTokenService refreshTokenService;
 
     public static final String SECRET = "357638792F423F4428472B4B6250655368566D597133743677397A2443264621";
 
+    @Override
+    public String generateToken(String email){
+        Map<String, Object> claims = new HashMap<>();
+        return createToken(claims, email);
+    }
+
+    @Override
     public String extractEmail(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
+    @Override
+    public boolean validateToken(String token, UserDetails userDetails) {
+        try {
+            final String username = extractEmail(token);
+            return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        } catch (Exception e) {
+            return false;
+        }
     }
 
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
@@ -50,37 +63,27 @@ public class JwtService {
         return extractExpiration(token).before(new Date());
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        try {
-            final String username = extractEmail(token);
-            return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-
-    public String generateToken(String email){
-        Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, email);
-    }
-
-    private void deleteOldRefreshToken(RefreshToken refreshToken) {
-        refreshTokenService.deleteRefreshToken(refreshToken);
+    private Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
     }
 
     private String createToken(Map<String, Object> claims, String email) {
-
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(email)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis()+1000*6000*1))
-                .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 6000 * 1))
+                .signWith(getSignKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
 
     private Key getSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    // Privatna metoda za brisanje refresh tokena (ako je potrebna)
+    private void deleteOldRefreshToken(RefreshToken refreshToken) {
+        refreshTokenService.deleteRefreshToken(refreshToken);
     }
 }
