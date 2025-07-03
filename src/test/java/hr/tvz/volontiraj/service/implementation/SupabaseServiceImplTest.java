@@ -1,14 +1,13 @@
 package hr.tvz.volontiraj.service.implementation;
 
+import hr.tvz.volontiraj.service.HttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
@@ -16,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -29,6 +29,9 @@ public class SupabaseServiceImplTest {
 
     @Mock
     private RestTemplate restTemplate;
+
+    @Mock
+    private HttpClient  httpClient;
 
     @BeforeEach
     void setup() {
@@ -47,8 +50,9 @@ public class SupabaseServiceImplTest {
 
         ResponseEntity<String> response = new ResponseEntity<>("OK", HttpStatus.OK);
 
-        when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(String.class)))
-                .thenReturn(response);
+        ArgumentCaptor<HttpEntity> requestCaptor = ArgumentCaptor.forClass(HttpEntity.class);
+
+        when(httpClient.put(anyString(), requestCaptor.capture())).thenReturn(response);
 
         List<String> result = supabaseService.uploadImages(List.of(mockFile));
 
@@ -65,7 +69,7 @@ public class SupabaseServiceImplTest {
 
         assertTrue(result.isEmpty());
 
-        verify(restTemplate, never()).exchange(anyString(), any(), any(), eq(String.class));
+        verify(httpClient, never()).put(anyString(), any());
     }
 
 
@@ -77,14 +81,14 @@ public class SupabaseServiceImplTest {
         when(mockFile.getContentType()).thenReturn("image/jpeg");
         when(mockFile.getBytes()).thenReturn("dummyData".getBytes());
 
-        ResponseEntity<String> badResponse = new ResponseEntity<>("Error uploading", HttpStatus.BAD_REQUEST);
+     //   ResponseEntity<String> badResponse = new ResponseEntity<>("Error uploading", HttpStatus.BAD_REQUEST);
 
-        when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(String.class)))
-                .thenReturn(badResponse);
+        when(httpClient.put(anyString(), any()))
+                .thenThrow(new RuntimeException("No files found"));
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> supabaseService.uploadImages(List.of(mockFile)));
+        IOException exception = assertThrows(IOException.class, () -> supabaseService.uploadImages(List.of(mockFile)));
 
-        assertEquals("Upload failed: Error uploading", exception.getMessage());
+        assertEquals("Upload failed: No files found", exception.getMessage());
     }
 
 }
