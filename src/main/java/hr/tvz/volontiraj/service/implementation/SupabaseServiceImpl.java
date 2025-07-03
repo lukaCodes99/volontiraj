@@ -1,10 +1,10 @@
 package hr.tvz.volontiraj.service.implementation;
 
 import hr.tvz.volontiraj.service.SupabaseService;
+import hr.tvz.volontiraj.service.HttpClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -22,10 +22,10 @@ public class SupabaseServiceImpl implements SupabaseService {
     @Value("${supabase.bucket}")
     private String supabaseBucket;
 
-    private final RestTemplate restTemplate;
+    private final HttpClient httpClient;
 
-    public SupabaseServiceImpl(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    public SupabaseServiceImpl(HttpClient httpClient) {
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class SupabaseServiceImpl implements SupabaseService {
                     headers.setBearerAuth(supabaseKey);
 
                     HttpEntity<byte[]> requestEntity = new HttpEntity<>(file.getBytes(), headers);
-                    ResponseEntity<String> response = restTemplate.exchange(uploadUrl, HttpMethod.PUT, requestEntity, String.class);
+                    ResponseEntity<String> response = httpClient.put(uploadUrl, requestEntity);
 
                     if (response.getStatusCode().is2xxSuccessful()) {
                         uploadedPaths.add(uploadUrl);
